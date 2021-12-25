@@ -1,0 +1,84 @@
+{
+  "name": "cw-ide-webivew",
+  "displayName": "CosmWasm IDE Webview",
+  "description": "The CosmWasm IDE extension webivew",
+  "icon": "logo-128.png",
+  "version": "0.0.1",
+  "publisher": "oraichain",
+  "homepage": ".",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oraichain/cw-ide-webview.git"
+  },
+  "engines": {
+    "vscode": "^1.53.0"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .ts,.tsx",
+    "watch": "tsc -watch -p tsconfig.extension.json",
+    "start": "env-cmd -f .env.development react-scripts start",
+    "prod": "env-cmd -f .env.production react-scripts start",
+    "build": "react-scripts --max_old_space_size=8192 build",
+    "predeploy": "react-scripts --max_old_space_size=8192 build"
+  },
+  "devDependencies": {
+    "@cosmjs/launchpad": "^0.26.2",
+    "@cosmjs/proto-signing": "^0.26.5",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^12.12.0",
+    "@types/react": "^17.0.19",
+    "@types/react-dom": "^17.0.9",
+    "@types/shelljs": "^0.8.9",
+    "@types/vscode": "^1.53.0",
+    "axios": "^0.23.0",
+    "mocha": "^9.1.0",
+    "react-scripts": "^4.0.3",
+    "secretjs": "^0.16.7",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@cosmjs/cosmwasm-stargate": "0.25.0",
+    "@cosmjs/cosmwasm-stargate-1.0": "npm:@cosmjs/cosmwasm-stargate@0.27.0",
+    "@cosmjs/crypto": "^0.26.5",
+    "@cosmjs/math": "^0.26.5",
+    "@cosmjs/proto-signing": "^0.26.5",
+    "@cosmjs/stargate": "^0.26.5",
+    "@keplr-wallet/cosmos": "^0.9.6",
+    "@keplr-wallet/stores": "^0.9.6",
+    "@keplr-wallet/types": "^0.9.6",
+    "@oraichain/cosmosjs": "^0.0.75",
+    "@rjsf/antd": "^3.2.1",
+    "@rjsf/core": "^3.2.1",
+    "@types/lodash": "^4.14.177",
+    "antd": "^4.17.2",
+    "base64-arraybuffer": "^1.0.1",
+    "dayjs": "^1.10.7",
+    "env-cmd": "^10.1.0",
+    "lodash": "^4.17.21",
+    "mobx-react-lite": "^3.2.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-json-view": "^1.21.3",
+    "sass": "^1.43.2",
+    "shelljs": "^0.8.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
