@@ -1,0 +1,14 @@
+{
+    "projects": {
+        "default": "cosmwasm-ide"
+    },
+    "targets": {
+        "cosmwasm-ide": {
+            "hosting": {
+                "cw-ide-webview": [
+                    "cw-ide-webview"
+                ]
+            }
+        }
+    }
+}

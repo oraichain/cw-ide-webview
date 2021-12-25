@@ -106,3 +106,5 @@ dist
 build
 
 .env*
+
+.firebase
