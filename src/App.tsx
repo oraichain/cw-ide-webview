@@ -48,6 +48,7 @@ const App = () => {
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: MessageEvent) => {
     const message = event.data; // The json data that the extension sent
+    console.log("event: ", event);
     if (message.payload) setWasmBody(message.payload);
     if (message.mnemonic) {
       setMnemonic(message.mnemonic);
