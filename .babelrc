@@ -1,0 +1,6 @@
+// .babelrc
+{
+    "plugins": [
+        "react-hot-loader/babel"
+    ]
+}

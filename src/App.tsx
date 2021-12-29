@@ -1,3 +1,6 @@
+// hot reload
+import { hot } from 'react-hot-loader/root';
+
 import { useEffect, useState } from "react";
 import logo from "./logo.png";
 // import Form from "@rjsf/core";
@@ -291,4 +294,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default hot(App);
