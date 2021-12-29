@@ -69,6 +69,9 @@ const AdvancedInteraction = () => {
             <div className="intro">
                 Start the Wasm smart contract development journey with CosmWasm IDE by building your first contract! Choose a smart contract file and click the button 'Build CosmWasm' to build your contract. You can also interact with an existing smart contract.
             </div>
+            <Button onClick={() => { window.keplr.enable("Oraichain-testnet") }}>
+                Keplr test
+            </Button>
             <div className="chain-select">
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <IconChain
