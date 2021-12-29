@@ -7,22 +7,10 @@ import { decode } from "base64-arraybuffer";
 import { Coin } from "@cosmjs/cosmwasm-stargate/build/codec/cosmos/base/v1beta1/coin";
 import CosmJsAbstract from "./cosmjs-abstract";
 
-const collectWallet = async (mnemonic: string) => {
-    const { current } = window.chainStore;
-    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
-        mnemonic,
-        {
-            hdPaths: [stringToPath(current.hdPath ? current.hdPath : "m/44'/118'/0'/0/0")],
-            prefix: current.bech32Config.bech32PrefixAccAddr
-        }
-    );
-    return wallet;
-}
-
 class CosmJsLatest extends CosmJsAbstract {
     /**
    * a wrapper method to deploy a smart contract
-   * @param mnemonic - Your wallet's mnemonic to deploy the contract
+   * @param mnemonic - Your wallet's mnemonic to deploy the contract (optional). If dont have then automatically use Keplr wallet
    * @param wasmBody - The bytecode of the wasm contract file
    * @param initInput - initiate message of the contract in object string (use JSON.stringtify)
    * @param label (optional) - contract label
@@ -30,13 +18,13 @@ class CosmJsLatest extends CosmJsAbstract {
    * @param fees - the fees to deploy the contract
    * @returns - Contract address after the instantiation process
    */
-    async handleDeploy(args: { mnemonic: string, wasmBody: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, fees?: number, instantiateOptions?: cosmwasm.InstantiateOptions }) {
+    async handleDeploy(args: { mnemonic?: string, wasmBody: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, fees?: number, instantiateOptions?: cosmwasm.InstantiateOptions }) {
         const { mnemonic, wasmBody, initInput, label, gasAmount, fees, instantiateOptions } = args;
         const { current } = window.chainStore;
         // convert wasm body from base64 to bytes array
         const wasmCode = new Uint8Array(decode(wasmBody));
         try {
-            const wallet = await collectWallet(mnemonic);
+            const wallet = await this.collectWallet(mnemonic);
             const [firstAccount] = await wallet.getAccounts();
             const gasPrice = GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`);
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasPrice, prefix: current.bech32Config.bech32PrefixAccAddr });
@@ -85,7 +73,7 @@ class CosmJsLatest extends CosmJsAbstract {
         try {
             const { mnemonic, address, handleMsg, memo, amount, gasAmount, fees } = args;
             const { current } = window.chainStore;
-            const wallet = await collectWallet(mnemonic);
+            const wallet = await this.collectWallet(mnemonic);
             const [firstAccount] = await wallet.getAccounts();
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasAmount ? GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`) : undefined, prefix: current.bech32Config.bech32PrefixAccAddr });
             const input = JSON.parse(handleMsg);
