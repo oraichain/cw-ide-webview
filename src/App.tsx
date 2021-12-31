@@ -1,6 +1,4 @@
 // hot reload
-import { hot } from 'react-hot-loader/root';
-
 import { useEffect, useState } from "react";
 import logo from "./logo.png";
 // import Form from "@rjsf/core";
@@ -22,8 +20,6 @@ const antIcon = (
 );
 
 const { Option } = Select;
-
-let vscode: VSCode;
 
 const App = () => {
   const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
@@ -55,13 +51,6 @@ const App = () => {
     if (message.payload) setWasmBody(message.payload);
     if (message.mnemonic) {
       setMnemonic(message.mnemonic);
-      onDeploy(message.mnemonic, message.payload);
-    }
-    try {
-      vscode = acquireVsCodeApi();
-      // vscode.postMessage(`from UI: ${message.action}`);
-    } catch (error) {
-      console.log("error in acquire vs code api: ", error);
     }
     // if message payload is build => post message back to extension to collect schema file
     if (message.action === "build") {
@@ -74,8 +63,10 @@ const App = () => {
       setErrorMessage("");
     }
     if (message.action === "deploy") {
+      // console.log("query file: ", message.queryFile);
       setHandleSchema(processSchema(JSON.parse(message.handleFile)));
       setQuerySchema(processSchema(JSON.parse(message.queryFile)));
+      onDeploy(message.mnemonic, message.payload);
     }
   };
   useEffect(() => {
@@ -166,7 +157,7 @@ const App = () => {
     <div className="app">
       <header className="app-header">
         <img src={logo} className="app-logo" alt="logo" />
-        <h1 className="app-title">COSMWASM IDE</h1>
+        <h1 className="app-title">COSMWASM IDEEEEE</h1>
       </header>
       <div className="app-divider" />
       {
@@ -294,4 +285,4 @@ const App = () => {
   );
 };
 
-export default hot(App);
+export default App;

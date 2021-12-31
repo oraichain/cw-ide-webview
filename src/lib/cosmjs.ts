@@ -76,7 +76,9 @@ class CosmJs extends CosmJsAbstract {
         try {
             const { mnemonic, address, handleMsg, memo, amount, gasAmount } = args;
             const { current } = window.chainStore;
+            console.log("before wallet");
             const wallet = await this.collectWallet(mnemonic);
+            console.log("after wallet");
             const [firstAccount] = await wallet.getAccounts();
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasAmount ? GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`) : undefined, prefix: current.bech32Config.bech32PrefixAccAddr });
             const input = JSON.parse(handleMsg);
