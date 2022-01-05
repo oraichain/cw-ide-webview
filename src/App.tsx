@@ -9,11 +9,12 @@ import { ReactComponent as IconSelect } from './assets/icons/code.svg';
 import { ReactComponent as IconChain } from './assets/icons/chain.svg';
 import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
-import { CustomForm, CustomInput } from "./components";
+import { CustomForm, CustomInput, GasForm } from "./components";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "./lib/cosmjs-factory";
 import instantiateOptionsSchema from "./types/schema/instantiate-options";
 import { AdvancedInteraction } from "./pages";
+import { hot } from 'react-hot-loader/root';
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -43,6 +44,7 @@ const App = () => {
   const [deploySource, setDeploySource] = useState('');
   const [deployBuilder, setDeployBuilder] = useState('');
   const [instantiateOptions, setOptions] = useState(undefined);
+  const [gasLimit, setGasLimit] = useState(undefined);
 
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: MessageEvent) => {
@@ -196,8 +198,9 @@ const App = () => {
               <div className="wrap-form">
                 <span className="please-text">Please fill out the form below to deploy the contract:</span>
                 <CustomInput inputHeader="input label" input={label} setInput={setLabel} />
-                <CustomInput inputHeader="Gas price" input={gasPrice} setInput={setGasPrice} placeholder="eg. 0.0025" />
-                <CustomInput inputHeader="Gas denom" input={gasDenom} setInput={setGasDenom} placeholder="eg. orai" />
+                {window.chainStore.current.cosmwasmVersion !== "0.16.0" && window.chainStore.current.cosmwasmVersion !== "1.0.0" &&
+                  <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+                }
                 <CustomInput inputHeader="Source code url" input={deploySource} setInput={setDeploySource} placeholder="eg. https://foobar.com" />
                 <CustomInput inputHeader="Contract builder (Docker img with tag)" input={deployBuilder} setInput={setDeployBuilder} placeholder="eg. orai/orai:0.40.1" />
                 <div className="input-form">
@@ -246,10 +249,9 @@ const App = () => {
           <div className="contract-address">
             <span>Contract Execute </span>
           </div>
-          <div className="wrap-form">
-            <CustomInput inputHeader="Gas price" input={gasPrice} setInput={setGasPrice} placeholder="eg. 0.0025" />
-            <CustomInput inputHeader="Gas denom" input={gasDenom} setInput={setGasDenom} placeholder="eg. orai" />
-          </div>
+          {window.chainStore.current.cosmwasmVersion !== "0.16.0" && window.chainStore.current.cosmwasmVersion !== "1.0.0" &&
+            <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+          }
           <CustomForm schema={handleSchema} onSubmit={(data) => onHandle(data)} />
           <div className="app-divider" />
           <div className="contract-address">
@@ -285,4 +287,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default hot(App);

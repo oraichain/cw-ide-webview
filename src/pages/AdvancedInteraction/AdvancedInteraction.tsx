@@ -10,7 +10,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "src/lib/cosmjs-factory";
-import { CustomInput } from "src/components";
+import { CustomInput, GasForm } from "src/components";
 
 const antIcon = (
     <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -18,13 +18,12 @@ const antIcon = (
 
 const { Option } = Select;
 
-let vscode: VSCode;
-
 const AdvancedInteraction = () => {
     const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
     const [mnemonic, setMnemonic] = useState('');
     const [gasPrice, setGasPrice] = useState('0');
     const [gasDenom, setGasDenom] = useState(window.chainStore.chainInfos[0].feeCurrencies[0].coinMinimalDenom);
+    const [gasLimit, setGasLimit] = useState(undefined);
     const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
     const [contractAddr, setContractAddr] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -55,7 +54,11 @@ const AdvancedInteraction = () => {
         setIsInteractionLoading(true);
         let cosmJs = new CosmJsFactory(window.chainStore.current);
         try {
-            const queryResult = await cosmJs.current.execute({ mnemonic, address: contractAddr, handleMsg: executeMessage, gasAmount: { amount: gasPrice, denom: gasDenom } });
+            const queryResult = await cosmJs.current.execute({
+                mnemonic, address: contractAddr, handleMsg: executeMessage, gasAmount: { amount: gasPrice, denom: gasDenom }, gasLimits: {
+                    exec: gasLimit ? parseInt(gasLimit) : undefined
+                }
+            });
             console.log("query result: ", queryResult);
             setResultJson({ data: queryResult });
         } catch (error) {
@@ -106,8 +109,9 @@ const AdvancedInteraction = () => {
                 <span>Contract Execute </span>
             </div>
             <div className="wrap-form">
-                <CustomInput inputHeader="Gas price" input={gasPrice} setInput={setGasPrice} placeholder="eg. 0.0025" />
-                <CustomInput inputHeader="Gas denom" input={gasDenom} setInput={setGasDenom} placeholder="eg. orai" />
+                {window.chainStore.current.cosmwasmVersion !== "0.16.0" && window.chainStore.current.cosmwasmVersion !== "1.0.0" &&
+                    <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+                }
                 <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />
             </div>
             <Button onClick={onHandle}>

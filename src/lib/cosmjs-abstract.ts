@@ -18,7 +18,7 @@ export default class CosmJsAbstract {
     async query(_address: string, _queryMsg: string): Promise<any> {
         throw new Error("Method 'query()' must be implemented.");
     }
-    async execute(_args: { mnemonic: string, address: string, handleMsg: string, memo?: string, amount?: any, gasAmount: { amount: string, denom: string }, fees?: number }): Promise<any> {
+    async execute(_args: { mnemonic: string, address: string, handleMsg: string, memo?: string, amount?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
         throw new Error("Method 'execute()' must be implemented.");
     }
 

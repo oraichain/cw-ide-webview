@@ -18,8 +18,8 @@ class CosmJsLatest extends CosmJsAbstract {
    * @param fees - the fees to deploy the contract
    * @returns - Contract address after the instantiation process
    */
-    async handleDeploy(args: { mnemonic?: string, wasmBody: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, fees?: number, instantiateOptions?: cosmwasm.InstantiateOptions }) {
-        const { mnemonic, wasmBody, initInput, label, gasAmount, fees, instantiateOptions } = args;
+    async handleDeploy(args: { mnemonic?: string, wasmBody: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: cosmwasm.InstantiateOptions }) {
+        const { mnemonic, wasmBody, initInput, label, gasAmount, instantiateOptions } = args;
         const { current } = window.chainStore;
         // convert wasm body from base64 to bytes array
         const wasmCode = new Uint8Array(decode(wasmBody));
@@ -30,14 +30,14 @@ class CosmJsLatest extends CosmJsAbstract {
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasPrice, prefix: current.bech32Config.bech32PrefixAccAddr });
 
             // upload wasm contract to get code id
-            const uploadResult = await client.upload(firstAccount.address, wasmCode, fees ? fees : 'auto');
+            const uploadResult = await client.upload(firstAccount.address, wasmCode, 'auto');
             console.log("upload result: ", uploadResult);
 
             const codeId = uploadResult.codeId;
             const input = initInput;
 
             // instantiate contract with input
-            const instantiateResult = await client.instantiate(firstAccount.address, codeId, input, label ? label : "smart contract", fees ? fees : 'auto', instantiateOptions);
+            const instantiateResult = await client.instantiate(firstAccount.address, codeId, input, label ? label : "smart contract", 'auto', instantiateOptions);
             console.log("instantiate result: ", instantiateResult);
             return instantiateResult.contractAddress;
         } catch (error) {
@@ -69,15 +69,15 @@ class CosmJsLatest extends CosmJsAbstract {
      * @param args - an object containing essential parameters to execute contract
      * @returns - transaction hash after executing the contract
      */
-    async execute(args: { mnemonic: string, address: string, handleMsg: string, memo?: string, amount?: Coin[], gasAmount?: { amount: string, denom: string }, fees?: number }) {
+    async execute(args: { mnemonic: string, address: string, handleMsg: string, memo?: string, amount?: Coin[], gasAmount?: { amount: string, denom: string } }) {
         try {
-            const { mnemonic, address, handleMsg, memo, amount, gasAmount, fees } = args;
+            const { mnemonic, address, handleMsg, memo, amount, gasAmount } = args;
             const { current } = window.chainStore;
             const wallet = await this.collectWallet(mnemonic);
             const [firstAccount] = await wallet.getAccounts();
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasAmount ? GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`) : undefined, prefix: current.bech32Config.bech32PrefixAccAddr });
             const input = JSON.parse(handleMsg);
-            const result = await client.execute(firstAccount.address, address, input, fees ? fees : 'auto', memo, amount);
+            const result = await client.execute(firstAccount.address, address, input, 'auto', memo, amount);
             return result.transactionHash;
         } catch (error) {
             console.log("error in executing contract: ", error);
