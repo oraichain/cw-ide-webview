@@ -106,10 +106,9 @@ const App = () => {
       setErrorMessage("Instantiate data is empty!");
       return;
     };
-    setErrorMessage("");
-    window.chainStore.setChain(chainName);
+    resetMessage();
     setIsLoading(true);
-    setContractAddr("");
+    window.chainStore.setChain(chainName);
 
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);
@@ -129,6 +128,7 @@ const App = () => {
 
   const onQuery = async (data) => {
     console.log("data: ", data)
+    resetMessage();
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -143,6 +143,7 @@ const App = () => {
 
   const onHandle = async (data) => {
     console.log("data: ", data)
+    resetMessage();
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -153,6 +154,11 @@ const App = () => {
       setErrorMessage(String(error));
     }
     setIsInteractionLoading(false);
+  }
+
+  const resetMessage = () => {
+    setErrorMessage("");
+    setResultJson({});
   }
 
   return (
