@@ -28,14 +28,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
                 coinDecimals: 6,
                 coinGeckoId: 'oraichain-token',
                 coinImageUrl: window.location.origin + '/public/assets/tokens/orai.png',
-            },
-            {
-                coinDenom: 'ORAI',
-                coinMinimalDenom: 'orai',
-                coinDecimals: 6,
-                coinGeckoId: 'oraichain-token',
-                coinImageUrl: window.location.origin + '/public/assets/tokens/orai.png',
-            },
+            }
         ],
         feeCurrencies: [
             {
@@ -54,7 +47,92 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://testnet.scan.orai.io/txs/${txHash}',
         hdPath: "m/44'/118'/0'/0/0",
-        cosmwasmVersion: '0.13.2'
+        cosmwasmVersion: '0.13.2',
+        faucet: 'https://testnet-faucet.web.app/'
+    },
+    {
+        rpc: 'https://rpc.sandynet.cosmwasm.com/',
+        rest: 'https://lcd.sandynet.cosmwasm.com/',
+        chainId: 'sandynet-1',
+        chainName: 'Sandynet',
+        stakeCurrency: {
+            coinDenom: 'MAYA',
+            coinMinimalDenom: 'umaya',
+            coinDecimals: 6,
+            coinGeckoId: 'none',
+        },
+        bip44: {
+            coinType: 118,
+        },
+        bech32Config: Bech32Address.defaultBech32Config('wasm'),
+        currencies: [
+            {
+                coinDenom: 'MAYA',
+                coinMinimalDenom: 'umaya',
+                coinDecimals: 6,
+                coinGeckoId: 'none',
+            }
+        ],
+        feeCurrencies: [
+            {
+                coinDenom: 'BAY',
+                coinMinimalDenom: 'ubay',
+                coinDecimals: 6,
+                coinGeckoId: 'none',
+            },
+        ],
+        gasPriceStep: {
+            low: 0,
+            average: 0.0025,
+            high: 0.004,
+        },
+        features: ['stargate', 'ibc-transfer', 'cosmwasm'],
+        explorerUrlToTx: 'https://block-explorer.sandynet.cosmwasm.com/transactions/{txHash}',
+        hdPath: "m/44'/118'/0'/0/0",
+        cosmwasmVersion: '1.0.0',
+        faucet: 'https://faucet.sandynet.cosmwasm.com/'
+    },
+    {
+        rpc: 'https://rpc.uni.juno.deuslabs.fi',
+        rest: 'https://lcd.uni.juno.deuslabs.fi',
+        chainId: 'uni',
+        chainName: 'uni',
+        stakeCurrency: {
+            coinDenom: 'JUNO',
+            coinMinimalDenom: 'ujunox',
+            coinDecimals: 6,
+            coinGeckoId: 'none',
+        },
+        bip44: {
+            coinType: 118,
+        },
+        bech32Config: Bech32Address.defaultBech32Config('juno'),
+        currencies: [
+            {
+                coinDenom: 'JUNO',
+                coinMinimalDenom: 'ujunox',
+                coinDecimals: 6,
+                coinGeckoId: 'none',
+            },
+        ],
+        feeCurrencies: [
+            {
+                coinDenom: 'JUNO',
+                coinMinimalDenom: 'ujunox',
+                coinDecimals: 6,
+                coinGeckoId: 'none',
+            },
+        ],
+        gasPriceStep: {
+            low: 0,
+            average: 0.0025,
+            high: 0.004,
+        },
+        features: ['stargate', 'ibc-transfer', 'cosmwasm'],
+        explorerUrlToTx: 'https://uni.junoscan.com',
+        hdPath: "m/44'/118'/0'/0/0",
+        cosmwasmVersion: '0.16.0',
+        faucet: 'https://faucet.uni.juno.deuslabs.fi'
     },
     {
         rpc: 'https://rpc.orai.io',

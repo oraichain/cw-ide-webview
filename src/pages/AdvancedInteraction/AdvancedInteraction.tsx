@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import logo from "./logo.png";
 // import Form from "@rjsf/core";
 import Form from '@rjsf/antd';
@@ -10,7 +10,9 @@ import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "src/lib/cosmjs-factory";
-import { CustomInput, GasForm } from "src/components";
+import { CustomForm, CustomInput, GasForm, MyDropZone } from "src/components";
+import Dropzone, { useDropzone } from 'react-dropzone'
+import { processSchema } from "src/lib/utils";
 
 const antIcon = (
     <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -31,15 +33,18 @@ const AdvancedInteraction = () => {
     const [isInteractionLoading, setIsInteractionLoading] = useState(false);
     const [queryMessage, setQueryMessage] = useState("");
     const [executeMessage, setExecuteMessage] = useState("");
+    const [querySchema, setQuerySchema] = useState({});
+    const [handleSchema, setHandleSchema] = useState({});
 
-    const onQuery = async () => {
+    const onQuery = async (data) => {
         setErrorMessage("");
-        console.log("query message: ", queryMessage)
         window.chainStore.setChain(chainName);
         setIsInteractionLoading(true);
         let cosmJs = new CosmJsFactory(window.chainStore.current);
         try {
-            const queryResult = await cosmJs.current.query(contractAddr, queryMessage);
+            let finalMessage = queryMessage;
+            if (data) finalMessage = JSON.stringify(data);
+            const queryResult = await cosmJs.current.query(contractAddr, finalMessage);
             console.log("query result: ", queryResult);
             setResultJson({ data: queryResult });
         } catch (error) {
@@ -48,14 +53,16 @@ const AdvancedInteraction = () => {
         setIsInteractionLoading(false);
     }
 
-    const onHandle = async () => {
+    const onHandle = async (data) => {
         setErrorMessage("");
         window.chainStore.setChain(chainName);
         setIsInteractionLoading(true);
         let cosmJs = new CosmJsFactory(window.chainStore.current);
         try {
+            let finalMessage = executeMessage;
+            if (data) finalMessage = JSON.stringify(data);
             const queryResult = await cosmJs.current.execute({
-                mnemonic, address: contractAddr, handleMsg: executeMessage, gasAmount: { amount: gasPrice, denom: gasDenom }, gasLimits: {
+                mnemonic, address: contractAddr, handleMsg: finalMessage, gasAmount: { amount: gasPrice, denom: gasDenom }, gasLimits: {
                     exec: gasLimit ? parseInt(gasLimit) : undefined
                 }
             });
@@ -109,25 +116,47 @@ const AdvancedInteraction = () => {
                 <span>Contract Execute </span>
             </div>
             <div className="wrap-form">
-                {window.chainStore.current.cosmwasmVersion !== "0.16.0" && window.chainStore.current.cosmwasmVersion !== "1.0.0" &&
-                    <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+                <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+                {_.isEmpty(handleSchema) &&
+                    <div style={{ marginBottom: '10px' }}>
+                        <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />
+                        <Button onClick={onHandle}>
+                            Execute
+                        </Button>
+                        <MyDropZone setSchema={setHandleSchema} />
+                    </div>
                 }
-                <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />
+                {!_.isEmpty(handleSchema) && <div>
+                    <CustomForm schema={handleSchema} onSubmit={(data) => onHandle(data)} />
+                    <Button onClick={() => { setHandleSchema({}) }}>
+                        Remove schema form
+                    </Button>
+                </div>
+                }
             </div>
-            <Button onClick={onHandle}>
-                Execute
-            </Button>
             <div className="app-divider" />
             <div className="contract-address">
                 <span>Contract Query </span>
             </div>
             <div className="wrap-form">
                 <CustomInput inputHeader="Gas denom" input={gasDenom} setInput={setGasDenom} placeholder="eg. orai" />
-                <CustomInput inputHeader="Query message" input={queryMessage} setInput={setQueryMessage} placeholder="eg. {}" />
+                {_.isEmpty(querySchema) && <div>
+                    <CustomInput inputHeader="Query message" input={queryMessage} setInput={setQueryMessage} placeholder="eg. {}" />
+                    <Button onClick={() => onQuery(null)}>
+                        Query
+                    </Button>
+                    <MyDropZone setSchema={setQuerySchema} />
+                </div>
+                }
+                {!_.isEmpty(querySchema) &&
+                    <div style={{ marginBottom: '10px' }}>
+                        <CustomForm schema={querySchema} onSubmit={(data) => onQuery(data)} />
+                        <Button onClick={() => { setQuerySchema({}) }}>
+                            Remove schema form
+                        </Button>
+                    </div>
+                }
             </div>
-            <Button onClick={onQuery}>
-                Query
-            </Button>
 
             {!isInteractionLoading ?
                 (errorMessage && (

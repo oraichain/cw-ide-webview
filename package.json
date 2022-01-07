@@ -17,8 +17,7 @@
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx",
     "watch": "tsc -watch -p tsconfig.extension.json",
-    "start": "env-cmd -f .env.development react-scripts start",
-    "prod": "env-cmd -f .env.production react-scripts start",
+    "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts --max_old_space_size=8192 build"
   },
   "devDependencies": {
@@ -60,10 +59,11 @@
     "mobx-react-lite": "^3.2.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-hot-loader": "^4.13.0",
+    "react-dropzone": "^11.4.2",
     "react-json-view": "^1.21.3",
     "sass": "^1.43.2",
-    "shelljs": "^0.8.4"
+    "shelljs": "^0.8.4",
+    "styled-components": "^5.3.3"
   },
   "eslintConfig": {
     "extends": [
