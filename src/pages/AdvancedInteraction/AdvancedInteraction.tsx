@@ -109,9 +109,7 @@ const AdvancedInteraction = () => {
                 <span>Contract Execute </span>
             </div>
             <div className="wrap-form">
-                {window.chainStore.current.cosmwasmVersion !== "0.16.0" && window.chainStore.current.cosmwasmVersion !== "1.0.0" &&
-                    <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
-                }
+                <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
                 <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />
             </div>
             <Button onClick={onHandle}>

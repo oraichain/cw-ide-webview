@@ -30,14 +30,14 @@ class CosmJsLatest extends CosmJsAbstract {
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasPrice, prefix: current.bech32Config.bech32PrefixAccAddr });
 
             // upload wasm contract to get code id
-            const uploadResult = await client.upload(firstAccount.address, wasmCode, 'auto');
+            const uploadResult = await client.upload(firstAccount.address, wasmCode, "auto");
             console.log("upload result: ", uploadResult);
 
             const codeId = uploadResult.codeId;
             const input = initInput;
 
             // instantiate contract with input
-            const instantiateResult = await client.instantiate(firstAccount.address, codeId, input, label ? label : "smart contract", 'auto', instantiateOptions);
+            const instantiateResult = await client.instantiate(firstAccount.address, codeId, input, label ? label : "smart contract", "auto", instantiateOptions);
             console.log("instantiate result: ", instantiateResult);
             return instantiateResult.contractAddress;
         } catch (error) {
