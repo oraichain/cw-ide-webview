@@ -47,9 +47,6 @@ jobs:
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
-      - name: COPY ENV
-        run: cp .env.production .env
-      - name: Build Production
         env:
           CI: false
         run: yarn build
