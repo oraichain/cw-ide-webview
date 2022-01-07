@@ -14,6 +14,7 @@ import ReactJson from 'react-json-view';
 import CosmJsFactory from "./lib/cosmjs-factory";
 import instantiateOptionsSchema from "./types/schema/instantiate-options";
 import { AdvancedInteraction } from "./pages";
+import { processSchema } from "./lib/utils";
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -76,20 +77,6 @@ const App = () => {
       window.removeEventListener("message", eventHandler);
     };
   });
-
-  const processSchema = (schema) => {
-    if ((schema.oneOf || schema.anyOf)) {
-      let key = 'anyOf';
-      if (schema.oneOf) key = 'oneOf';
-      schema[key] = ((schema.oneOf || schema.anyOf)).map((item) => ({
-        ...item, title: item.required[0]
-          .replace(/_/g, ' ')
-          .replace(/(?<=^|\s+)\w/g, (v) => v.toUpperCase())
-      }))
-      return schema;
-    }
-    return schema
-  };
 
   const handleOnChange = _.throttle(({ formData }) => {
     setInitSchemaData(formData);
