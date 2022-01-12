@@ -11,8 +11,6 @@ import _ from "lodash";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "src/lib/cosmjs-factory";
 import { CustomForm, CustomInput, GasForm, MyDropZone } from "src/components";
-import Dropzone, { useDropzone } from 'react-dropzone'
-import { processSchema } from "src/lib/utils";
 
 const antIcon = (
     <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
