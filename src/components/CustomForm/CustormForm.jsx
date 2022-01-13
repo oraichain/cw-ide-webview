@@ -7,27 +7,25 @@ const { Option } = Select;
 
 const CustomSelect =
   (selectionRef, schemaObj) =>
-  ({ options: { enumOptions }, value, onChange, ...props }) => {
-    console.log("value: ", value);
-    console.log(enumOptions);
-    return (
-      <Select
-        {...props}
-        onChange={(value) => {
-          selectionRef.current = +value;
-          schemaObj.current = {};
-          onChange(+value);
-        }}
-        value={value}
-      >
-        {enumOptions.map((opt) => (
-          <Option key={opt.value} value={opt.value}>
-            {opt.label}
-          </Option>
-        ))}
-      </Select>
-    );
-  };
+    ({ options: { enumOptions }, value, onChange, ...props }) => {
+      return (
+        <Select
+          {...props}
+          onChange={(value) => {
+            selectionRef.current = +value;
+            schemaObj.current = {};
+            onChange(+value);
+          }}
+          value={value}
+        >
+          {enumOptions.map((opt) => (
+            <Option key={opt.value} value={opt.value}>
+              {opt.label}
+            </Option>
+          ))}
+        </Select>
+      );
+    };
 
 const CustomForm = ({ schema, onSubmit }) => {
   const selection = useRef(0);

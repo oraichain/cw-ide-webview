@@ -1,4 +1,4 @@
-import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
+import { Coin, DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { stringToPath } from "@cosmjs/crypto";
 
 /**
@@ -18,7 +18,7 @@ export default class CosmJsAbstract {
     async query(_address: string, _queryMsg: string): Promise<any> {
         throw new Error("Method 'query()' must be implemented.");
     }
-    async execute(_args: { mnemonic: string, address: string, handleMsg: string, memo?: string, amount?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
+    async execute(_args: { mnemonic: string, address: string, handleMsg: string, handleOptions?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
         throw new Error("Method 'execute()' must be implemented.");
     }
 
@@ -43,4 +43,22 @@ export default class CosmJsAbstract {
             return wallet;
         }
     }
+}
+
+/**
+ * The options of an .instantiate() call.
+ * All properties are optional.
+ */
+export interface HandleOptions {
+    readonly memo?: string;
+    /**
+     * The funds that are transferred from the sender to the newly created contract.
+     * The funds are transferred as part of the message execution after the contract address is
+     * created and before the instantiation message is executed by the contract.
+     *
+     * Only native tokens are supported.
+     *
+     * TODO: Rename to `funds` for consistency (https://github.com/cosmos/cosmjs/issues/806)
+     */
+    readonly funds?: readonly Coin[];
 }

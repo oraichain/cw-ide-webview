@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import logo from "./logo.png";
+import { useCallback, useEffect, useRef, useState } from "react";
 // import Form from "@rjsf/core";
-import Form from '@rjsf/antd';
 import '../../themes/style.scss';
 import { Button, Input, Select, Spin } from 'antd';
 import { ReactComponent as IconSelect } from '../../assets/icons/code.svg';
@@ -10,7 +8,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "src/lib/cosmjs-factory";
-import { CustomForm, CustomInput, GasForm, MyDropZone } from "src/components";
+import { CustomForm, CustomInput, GasForm, MyDropZone, HandleOptions } from "src/components";
 
 const antIcon = (
     <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -33,6 +31,7 @@ const AdvancedInteraction = () => {
     const [executeMessage, setExecuteMessage] = useState("");
     const [querySchema, setQuerySchema] = useState({});
     const [handleSchema, setHandleSchema] = useState({});
+    const handleOptionsRef = useRef(null);
 
     const onQuery = async (data) => {
         setErrorMessage("");
@@ -62,7 +61,7 @@ const AdvancedInteraction = () => {
             const queryResult = await cosmJs.current.execute({
                 mnemonic, address: contractAddr, handleMsg: finalMessage, gasAmount: { amount: gasPrice, denom: gasDenom }, gasLimits: {
                     exec: gasLimit ? parseInt(gasLimit) : undefined
-                }
+                }, handleOptions: handleOptionsRef.current,
             });
             console.log("query result: ", queryResult);
             setResultJson({ data: queryResult });
@@ -109,12 +108,14 @@ const AdvancedInteraction = () => {
             <div className="wrap-form">
                 <CustomInput inputHeader="Contract address" input={contractAddr} setInput={setContractAddr} placeholder="eg. orai1ars73g86y4kzajsgam5ee38npgmkq54dlzuz6w" />
                 <CustomInput inputHeader="Wallet mnemonic (optional)" input={mnemonic} setInput={setMnemonic} placeholder="eg. foo bar" />
+
             </div>
             <div className="contract-address">
                 <span>Contract Execute </span>
             </div>
             <div className="wrap-form">
                 <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+                <HandleOptions handleOptionsRef={handleOptionsRef} />
                 {_.isEmpty(handleSchema) &&
                     <div style={{ marginBottom: '10px' }}>
                         <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />

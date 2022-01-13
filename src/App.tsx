@@ -1,5 +1,5 @@
 // hot reload
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import logo from "./logo.png";
 // import Form from "@rjsf/core";
 import Form from '@rjsf/antd';
@@ -45,6 +45,7 @@ const App = () => {
   const [deployBuilder, setDeployBuilder] = useState('');
   const [instantiateOptions, setOptions] = useState(undefined);
   const [gasLimit, setGasLimit] = useState(undefined);
+  const sentFundsRef = useRef(null);
 
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: MessageEvent) => {

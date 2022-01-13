@@ -5,7 +5,7 @@ import { GasPrice } from '@cosmjs/cosmwasm-stargate/node_modules/@cosmjs/stargat
 import { Decimal } from '@cosmjs/math'
 import { decode } from "base64-arraybuffer";
 import { Coin } from "@cosmjs/cosmwasm-stargate/build/codec/cosmos/base/v1beta1/coin";
-import CosmJsAbstract from "./cosmjs-abstract";
+import CosmJsAbstract, { HandleOptions } from "./cosmjs-abstract";
 import { InstantiateOptions } from "@cosmjs/cosmwasm-launchpad";
 
 class CosmJs extends CosmJsAbstract {
@@ -72,15 +72,15 @@ class CosmJs extends CosmJsAbstract {
      * @param args - an object containing essential parameters to execute contract
      * @returns - transaction hash after executing the contract
      */
-    async execute(args: { mnemonic?: string, address: string, handleMsg: string, memo?: string, amount?: Coin[], gasAmount?: { amount: string, denom: string }, gasLimits?: { exec: 200000 } }) {
+    async execute(args: { mnemonic?: string, address: string, handleMsg: string, handleOptions?: HandleOptions, gasAmount?: { amount: string, denom: string }, gasLimits?: { exec: 200000 } }) {
         try {
-            const { mnemonic, address, handleMsg, memo, amount, gasAmount, gasLimits } = args;
+            const { mnemonic, address, handleMsg, handleOptions, gasAmount, gasLimits } = args;
             const { current } = window.chainStore;
             const wallet = await this.collectWallet(mnemonic);
             const [firstAccount] = await wallet.getAccounts();
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasAmount ? GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`) : undefined, prefix: current.bech32Config.bech32PrefixAccAddr, gasLimits });
             const input = JSON.parse(handleMsg);
-            const result = await client.execute(firstAccount.address, address, input, memo, amount);
+            const result = await client.execute(firstAccount.address, address, input, handleOptions?.memo, handleOptions?.funds);
             return result.transactionHash;
         } catch (error) {
             console.log("error in executing contract: ", error);
