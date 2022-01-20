@@ -58,6 +58,7 @@ const AdvancedInteraction = () => {
         try {
             let finalMessage = executeMessage;
             if (data) finalMessage = JSON.stringify(data);
+            console.log("final message: ", finalMessage)
             const queryResult = await cosmJs.current.execute({
                 mnemonic, address: contractAddr, handleMsg: finalMessage, gasAmount: { amount: gasPrice, denom: gasDenom }, gasLimits: {
                     exec: gasLimit ? parseInt(gasLimit) : undefined
@@ -119,7 +120,7 @@ const AdvancedInteraction = () => {
                 {_.isEmpty(handleSchema) &&
                     <div style={{ marginBottom: '10px' }}>
                         <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />
-                        <Button onClick={onHandle}>
+                        <Button onClick={() => { onHandle(null) }}>
                             Execute
                         </Button>
                         <MyDropZone setSchema={setHandleSchema} />
