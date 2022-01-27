@@ -24,7 +24,7 @@ const { Option } = Select;
 
 const App = () => {
   const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
-  const [initSchemaData, setInitSchemaData] = useState({});
+  const [initSchemaData, setInitSchemaData] = useState(undefined);
   const [mnemonic, setMnemonic] = useState('');
   const [isBuilt, setIsBuilt] = useState(false);
   const [isDeployed, setIsDeployed] = useState(false);
@@ -66,6 +66,7 @@ const App = () => {
       setErrorMessage("");
     }
     if (message.action === "deploy") {
+      console.log("message deploy");
       // console.log("query file: ", message.queryFile);
       setHandleSchema(processSchema(JSON.parse(message.handleFile)));
       setQuerySchema(processSchema(JSON.parse(message.queryFile)));

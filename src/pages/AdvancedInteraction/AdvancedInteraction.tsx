@@ -58,7 +58,6 @@ const AdvancedInteraction = () => {
         try {
             let finalMessage = executeMessage;
             if (data) finalMessage = JSON.stringify(data);
-            console.log("final message: ", finalMessage)
             const queryResult = await cosmJs.current.execute({
                 mnemonic, address: contractAddr, handleMsg: finalMessage, gasAmount: { amount: gasPrice, denom: gasDenom }, gasLimits: {
                     exec: gasLimit ? parseInt(gasLimit) : undefined
