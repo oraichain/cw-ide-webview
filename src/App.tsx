@@ -9,7 +9,7 @@ import { ReactComponent as IconSelect } from './assets/icons/code.svg';
 import { ReactComponent as IconChain } from './assets/icons/chain.svg';
 import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
-import { CustomForm, CustomInput, GasForm } from "./components";
+import { CustomForm, CustomInput, CustomSelect, GasForm } from "./components";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "./lib/cosmjs-factory";
 import instantiateOptionsSchema from "./types/schema/instantiate-options";
@@ -30,7 +30,7 @@ const App = () => {
   const [isDeployed, setIsDeployed] = useState(false);
   const [wasmBody, setWasmBody] = useState();
   const [label, setLabel] = useState('');
-  const [gasPrice, setGasPrice] = useState('0');
+  const [gasPrice, setGasPrice] = useState(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
   const [gasDenom, setGasDenom] = useState(window.chainStore.chainInfos[0].feeCurrencies[0].coinMinimalDenom);
   const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
   const [contractAddr, setContractAddr] = useState("");
@@ -45,6 +45,7 @@ const App = () => {
   const [deployBuilder, setDeployBuilder] = useState('');
   const [instantiateOptions, setOptions] = useState(undefined);
   const [gasLimit, setGasLimit] = useState(undefined);
+  const [interactOption, setInteractOption] = useState("query");
   const sentFundsRef = useRef(null);
 
   // Handle messages sent from the extension to the webview
@@ -179,6 +180,7 @@ const App = () => {
                   onSelect={(value) => {
                     setChainName(value);
                     window.chainStore.setChain(value);
+                    setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
                     setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
                   }}
                 >
@@ -236,18 +238,28 @@ const App = () => {
         </div>
       )}
       {isDeployed && (
-        <div>
+        <div className="app-body">
+          <CustomSelect setInteractOption={setInteractOption} />
           <div className="app-divider" />
-          <div className="contract-address">
-            <span>Contract Execute </span>
-          </div>
-          <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
-          <CustomForm schema={handleSchema} onSubmit={(data) => onHandle(data)} />
+          {interactOption === "execute" &&
+            <div>
+              <div className="contract-address">
+                <span>Contract Execute </span>
+              </div>
+              <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+              <CustomForm schema={handleSchema} onSubmit={(data) => onHandle(data)} />
+            </div>
+          }
+          {
+            interactOption === "query" &&
+            <div>
+              <div className="contract-address">
+                <span>Contract Query </span>
+              </div>
+              <CustomForm schema={querySchema} onSubmit={(data) => onQuery(data)} />
+            </div>
+          }
           <div className="app-divider" />
-          <div className="contract-address">
-            <span>Contract Query </span>
-          </div>
-          <CustomForm schema={querySchema} onSubmit={(data) => onQuery(data)} />
 
           {!isInteractionLoading ?
             (errorMessage && (

@@ -8,7 +8,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "src/lib/cosmjs-factory";
-import { CustomForm, CustomInput, GasForm, MyDropZone, HandleOptions } from "src/components";
+import { CustomForm, CustomInput, GasForm, MyDropZone, HandleOptions, CustomSelect } from "src/components";
 
 const antIcon = (
     <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -19,10 +19,11 @@ const { Option } = Select;
 const AdvancedInteraction = () => {
     const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
     const [mnemonic, setMnemonic] = useState('');
-    const [gasPrice, setGasPrice] = useState('0');
+    const [gasPrice, setGasPrice] = useState(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
     const [gasDenom, setGasDenom] = useState(window.chainStore.chainInfos[0].feeCurrencies[0].coinMinimalDenom);
     const [gasLimit, setGasLimit] = useState(undefined);
     const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
+    const [interactOption, setInteractOption] = useState("query");
     const [contractAddr, setContractAddr] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [resultJson, setResultJson] = useState({});
@@ -95,6 +96,7 @@ const AdvancedInteraction = () => {
                     onSelect={(value) => {
                         setChainName(value);
                         window.chainStore.setChain(value);
+                        setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
                         setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
                     }}
                 >
@@ -110,52 +112,63 @@ const AdvancedInteraction = () => {
                 <CustomInput inputHeader="Wallet mnemonic (optional)" input={mnemonic} setInput={setMnemonic} placeholder="eg. foo bar" />
 
             </div>
-            <div className="contract-address">
-                <span>Contract Execute </span>
-            </div>
-            <div className="wrap-form">
-                <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
-                <HandleOptions handleOptionsRef={handleOptionsRef} />
-                {_.isEmpty(handleSchema) &&
-                    <div style={{ marginBottom: '10px' }}>
-                        <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />
-                        <Button onClick={() => { onHandle(null) }}>
-                            Execute
-                        </Button>
-                        <MyDropZone setSchema={setHandleSchema} />
+
+            <CustomSelect setInteractOption={setInteractOption} />
+
+            {interactOption === "execute" &&
+                <div>
+                    <div className="contract-address">
+                        <span>Contract Execute </span>
                     </div>
-                }
-                {!_.isEmpty(handleSchema) && <div>
-                    <CustomForm schema={handleSchema} onSubmit={(data) => onHandle(data)} />
-                    <Button onClick={() => { setHandleSchema({}) }}>
-                        Remove schema form
-                    </Button>
+                    <div className="wrap-form">
+                        <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+                        <HandleOptions handleOptionsRef={handleOptionsRef} />
+                        {_.isEmpty(handleSchema) &&
+                            <div style={{ marginBottom: '10px' }}>
+                                <CustomInput inputHeader="Execute message" input={executeMessage} setInput={setExecuteMessage} placeholder="eg. {}" />
+                                <Button onClick={() => { onHandle(null) }}>
+                                    Execute
+                                </Button>
+                                <MyDropZone setSchema={setHandleSchema} />
+                            </div>
+                        }
+                        {!_.isEmpty(handleSchema) && <div>
+                            <CustomForm schema={handleSchema} onSubmit={(data) => onHandle(data)} />
+                            <Button onClick={() => { setHandleSchema({}) }}>
+                                Remove schema form
+                            </Button>
+                        </div>
+                        }
+                    </div>
                 </div>
-                }
-            </div>
+            }
+            {interactOption === "query" &&
+                <div>
+                    <div className="contract-address">
+                        <span>Contract Query </span>
+                    </div>
+                    <div className="wrap-form">
+                        <CustomInput inputHeader="Gas denom" input={gasDenom} setInput={setGasDenom} placeholder="eg. orai" />
+                        {_.isEmpty(querySchema) && <div>
+                            <CustomInput inputHeader="Query message" input={queryMessage} setInput={setQueryMessage} placeholder="eg. {}" />
+                            <Button onClick={() => onQuery(null)}>
+                                Query
+                            </Button>
+                            <MyDropZone setSchema={setQuerySchema} />
+                        </div>
+                        }
+                        {!_.isEmpty(querySchema) &&
+                            <div style={{ marginBottom: '10px' }}>
+                                <CustomForm schema={querySchema} onSubmit={(data) => onQuery(data)} />
+                                <Button onClick={() => { setQuerySchema({}) }}>
+                                    Remove schema form
+                                </Button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
             <div className="app-divider" />
-            <div className="contract-address">
-                <span>Contract Query </span>
-            </div>
-            <div className="wrap-form">
-                <CustomInput inputHeader="Gas denom" input={gasDenom} setInput={setGasDenom} placeholder="eg. orai" />
-                {_.isEmpty(querySchema) && <div>
-                    <CustomInput inputHeader="Query message" input={queryMessage} setInput={setQueryMessage} placeholder="eg. {}" />
-                    <Button onClick={() => onQuery(null)}>
-                        Query
-                    </Button>
-                    <MyDropZone setSchema={setQuerySchema} />
-                </div>
-                }
-                {!_.isEmpty(querySchema) &&
-                    <div style={{ marginBottom: '10px' }}>
-                        <CustomForm schema={querySchema} onSubmit={(data) => onQuery(data)} />
-                        <Button onClick={() => { setQuerySchema({}) }}>
-                            Remove schema form
-                        </Button>
-                    </div>
-                }
-            </div>
 
             {!isInteractionLoading ?
                 (errorMessage && (
