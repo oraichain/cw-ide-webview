@@ -1,10 +1,6 @@
-import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import { stringToPath } from "@cosmjs/crypto";
 import * as cosmwasm from '@cosmjs/cosmwasm-stargate-1.0';
-import { GasPrice } from '@cosmjs/cosmwasm-stargate-1.0/node_modules/@cosmjs/stargate/build'
-import { Decimal } from '@cosmjs/math'
+import { GasPrice } from '@cosmjs/cosmwasm-stargate-1.0/node_modules/@cosmjs/stargate/build/fee'
 import { decode } from "base64-arraybuffer";
-import { Coin } from "@cosmjs/cosmwasm-stargate/build/codec/cosmos/base/v1beta1/coin";
 import CosmJsAbstract, { HandleOptions } from "./cosmjs-abstract";
 
 class CosmJsLatest extends CosmJsAbstract {
