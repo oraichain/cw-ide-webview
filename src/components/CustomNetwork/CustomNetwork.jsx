@@ -1,0 +1,120 @@
+import "antd/dist/antd.css";
+import _ from "lodash";
+import { Button, Input, Select, Spin } from 'antd';
+import { ReactComponent as IconSelect } from '../../assets/icons/code.svg';
+import { ReactComponent as IconChain } from '../../assets/icons/chain.svg';
+import { useEffect, useState } from "react";
+import { MyDropZone } from "..";
+
+const { Option } = Select;
+
+const CustomNetwork = ({ updateChain }) => {
+
+    const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
+    const [chainInfos, setChainInfos] = useState(window.chainStore.chainInfos);
+    const [jsonFile, setJsonFile] = useState({});
+    const [jsonFileName, setJsonFileName] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const handleJsonFile = (file) => {
+        setJsonFile(file.content);
+        setJsonFileName(file.fileName);
+    }
+
+    const onAddChain = () => {
+        try {
+            setErrorMessage("");
+            console.log("json file: ", jsonFile)
+            if (jsonFile.chainId) {
+                window.chainStore.addChain(jsonFile);
+                // set chain to auto trigger new chain store
+                setChainInfos(window.chainStore.chainInfos);
+                alert("Successfully added the new chain")
+            } else throw "Invalid chain data"
+        } catch (error) {
+            setErrorMessage(String(error));
+        }
+    }
+
+    const onRemoveChain = () => {
+        try {
+            setErrorMessage("");
+            if (jsonFile.chainId) {
+                window.chainStore.removeChain(jsonFile.chainId);
+                // set chain to auto trigger new chain store
+                setChainInfos(window.chainStore.chainInfos);
+                alert("Successfully removed the provided chain")
+            } else throw "invalid chain data"
+        } catch (error) {
+            setErrorMessage(String(error));
+        }
+    }
+
+
+    return (
+        <div className="chain-select">
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <IconChain
+                    style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "5px",
+                        marginBottom: "8px",
+                    }}
+                />
+                <h3> Select chain name</h3>
+            </div>
+            <Select
+                defaultValue={DEFAULT_CHAINMAME}
+                style={{ width: 240 }}
+                suffixIcon={<IconSelect />}
+                onSelect={(value) => {
+                    window.chainStore.setChain(value);
+                    updateChain(value);
+                    // setChainName(value);
+                    // setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
+                    // setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
+                }}
+            >
+                {chainInfos.map((info) => (
+                    <Option key={info.chainName} value={info.chainName}>
+                        {info.chainName}
+                    </Option>
+                ))}
+            </Select>
+            <div className="chain-management">
+                <div className="update-chain">
+                    <Button onClick={onAddChain}>
+                        Add new chain
+                    </Button>
+                    <Button onClick={onRemoveChain}>
+                        Remove chain
+                    </Button>
+                </div>
+                {(_.isEmpty(jsonFile) &&
+                    <div style={{ display: 'flex' }}>
+                        <MyDropZone setSchema={null} setJson={handleJsonFile} dropZoneText={"Drop the chain info json file here to add / remove chain"} />
+                    </div>
+                )}
+                {(jsonFileName && (
+                    <div>
+                        <div style={{ display: 'flex', color: 'white' }}>
+                            {`file name: ${jsonFileName}`}
+                        </div>
+                        <Button onClick={() => { setJsonFile({}); setJsonFileName("") }}>
+                            Remove json chain
+                        </Button>
+                    </div>
+                ))}
+                {(errorMessage && (
+                    <div className="contract-address">
+                        <span style={{ color: "red" }}>Error message </span>
+                        <p>{errorMessage}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+export default CustomNetwork;

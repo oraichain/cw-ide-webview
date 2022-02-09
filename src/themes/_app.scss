@@ -82,6 +82,15 @@
   background: #4b4a50;
 }
 
+.chain-management {
+  display: flex;
+  flex-direction: column;
+  .update-chain {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+}
+
 .wrap-form {
   border: 1px dashed #595959;
   padding: 16px 16px 0px 16px;
