@@ -8,7 +8,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "src/lib/cosmjs-factory";
-import { CustomForm, CustomInput, GasForm, MyDropZone, HandleOptions, CustomSelect } from "src/components";
+import { CustomForm, CustomInput, GasForm, MyDropZone, HandleOptions, CustomSelect, CustomNetwork } from "src/components";
 
 const antIcon = (
     <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -33,6 +33,12 @@ const AdvancedInteraction = () => {
     const [querySchema, setQuerySchema] = useState({});
     const [handleSchema, setHandleSchema] = useState({});
     const handleOptionsRef = useRef(null);
+
+    const updateChain = (value) => {
+        setChainName(value);
+        setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
+        setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
+    }
 
     const onQuery = async (data) => {
         setErrorMessage("");
@@ -77,36 +83,7 @@ const AdvancedInteraction = () => {
             <div className="intro">
                 Start the Wasm smart contract development journey with CosmWasm IDE by building your first contract! Choose a smart contract file and click the button 'Build CosmWasm' to build your contract. You can also interact with an existing smart contract.
             </div>
-            <div className="chain-select">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                    <IconChain
-                        style={{
-                            width: "16px",
-                            height: "16px",
-                            marginRight: "5px",
-                            marginBottom: "8px",
-                        }}
-                    />
-                    <h3> Select chain name</h3>
-                </div>
-                <Select
-                    defaultValue={DEFAULT_CHAINMAME}
-                    style={{ width: 240 }}
-                    suffixIcon={<IconSelect />}
-                    onSelect={(value) => {
-                        setChainName(value);
-                        window.chainStore.setChain(value);
-                        setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-                        setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
-                    }}
-                >
-                    {window.chainStore.chainInfos.map((info) => (
-                        <Option key={info.chainName} value={info.chainName}>
-                            {info.chainName}
-                        </Option>
-                    ))}
-                </Select>
-            </div>
+            <CustomNetwork updateChain={updateChain} />
             <div className="wrap-form">
                 <CustomInput inputHeader="Contract address" input={contractAddr} setInput={setContractAddr} placeholder="eg. orai1ars73g86y4kzajsgam5ee38npgmkq54dlzuz6w" />
                 <CustomInput inputHeader="Wallet mnemonic (optional)" input={mnemonic} setInput={setMnemonic} placeholder="eg. foo bar" />
@@ -129,7 +106,7 @@ const AdvancedInteraction = () => {
                                 <Button onClick={() => { onHandle(null) }}>
                                     Execute
                                 </Button>
-                                <MyDropZone setSchema={setHandleSchema} />
+                                <MyDropZone setSchema={setHandleSchema} setJson={null} dropZoneText={"Upload the schema file"} />
                             </div>
                         }
                         {!_.isEmpty(handleSchema) && <div>
@@ -154,7 +131,7 @@ const AdvancedInteraction = () => {
                             <Button onClick={() => onQuery(null)}>
                                 Query
                             </Button>
-                            <MyDropZone setSchema={setQuerySchema} />
+                            <MyDropZone setSchema={setQuerySchema} setJson={null} dropZoneText={"Upload the schema file"} />
                         </div>
                         }
                         {!_.isEmpty(querySchema) &&

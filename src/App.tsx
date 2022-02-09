@@ -9,7 +9,7 @@ import { ReactComponent as IconSelect } from './assets/icons/code.svg';
 import { ReactComponent as IconChain } from './assets/icons/chain.svg';
 import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
-import { CustomForm, CustomInput, CustomSelect, GasForm } from "./components";
+import { CustomForm, CustomInput, CustomNetwork, CustomSelect, GasForm } from "./components";
 import ReactJson from 'react-json-view';
 import CosmJsFactory from "./lib/cosmjs-factory";
 import instantiateOptionsSchema from "./types/schema/instantiate-options";
@@ -46,12 +46,10 @@ const App = () => {
   const [instantiateOptions, setOptions] = useState(undefined);
   const [gasLimit, setGasLimit] = useState(undefined);
   const [interactOption, setInteractOption] = useState("query");
-  const sentFundsRef = useRef(null);
 
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: MessageEvent) => {
     const message = event.data; // The json data that the extension sent
-    console.log("event: ", event);
     if (message.payload) setWasmBody(message.payload);
     if (message.mnemonic) {
       setMnemonic(message.mnemonic);
@@ -80,6 +78,12 @@ const App = () => {
       window.removeEventListener("message", eventHandler);
     };
   });
+
+  const updateChain = (value) => {
+    setChainName(value);
+    setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
+    setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
+  }
 
   const handleOnChange = _.throttle(({ formData }) => {
     setInitSchemaData(formData);
@@ -161,36 +165,7 @@ const App = () => {
         isBuilt && (
           <div>
             <div className="app-body">
-              <div className="chain-select">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <IconChain
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      marginRight: "5px",
-                      marginBottom: "8px",
-                    }}
-                  />
-                  <h3> Select chain name</h3>
-                </div>
-                <Select
-                  defaultValue={DEFAULT_CHAINMAME}
-                  style={{ width: 240 }}
-                  suffixIcon={<IconSelect />}
-                  onSelect={(value) => {
-                    setChainName(value);
-                    window.chainStore.setChain(value);
-                    setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-                    setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
-                  }}
-                >
-                  {window.chainStore.chainInfos.map((info) => (
-                    <Option key={info.chainName} value={info.chainName}>
-                      {info.chainName}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
+              <CustomNetwork updateChain={updateChain} />
               <div className="wrap-form">
                 <span className="please-text">Please fill out the form below to deploy the contract:</span>
                 <CustomInput inputHeader="input label" input={label} setInput={setLabel} />
