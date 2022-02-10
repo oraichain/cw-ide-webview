@@ -76,8 +76,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
         let chainInfos = this.getChainInfosRaw();
         let isTheSameInfo = chainInfos.filter(info => info.chainId === chainInfo.chainId || info.chainName === chainInfo.chainName);
         if (isTheSameInfo.length > 0) {
-            alert("This chain is already included. Cannot add in the list");
-            return;
+            throw "This chain is already included. Cannot add in the list";
         }
         chainInfos.push(chainInfo);
         this.setChainInfos(chainInfos);
@@ -90,8 +89,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
         // the new chain info must have a different chain id & chain name
         let chain = this.getChain(chainId);
         if (!chain) {
-            alert("This chain is not in the list. Cannot remove");
-            return;
+            throw "This chain is not in the list. Cannot remove";
         }
         let chainInfos = this.getChainInfosRaw();
         chainInfos = chainInfos.filter(info => info.chainId !== chainId);
