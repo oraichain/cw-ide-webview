@@ -32,9 +32,9 @@
     "axios": "^0.23.0",
     "firebase-tools": "^9.8.0",
     "mocha": "^9.1.0",
+    "react-error-overlay": "6.0.9",
     "react-scripts": "^4.0.3",
     "secretjs": "^0.16.7",
-    "react-error-overlay": "6.0.9",
     "typescript": "^4.3.5"
   },
   "dependencies": {
