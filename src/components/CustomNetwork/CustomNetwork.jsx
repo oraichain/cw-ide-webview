@@ -15,10 +15,12 @@ const CustomNetwork = ({ updateChain }) => {
     const [jsonFile, setJsonFile] = useState({});
     const [jsonFileName, setJsonFileName] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [updateMessage, setUpdateMessage] = useState("");
 
     const handleJsonFile = (file) => {
         setJsonFile(file.content);
         setJsonFileName(file.fileName);
+        setUpdateMessage("");
     }
 
     const onAddChain = () => {
@@ -29,10 +31,11 @@ const CustomNetwork = ({ updateChain }) => {
                 window.chainStore.addChain(jsonFile);
                 // set chain to auto trigger new chain store
                 setChainInfos(window.chainStore.chainInfos);
-                alert("Successfully added the new chain")
+                setUpdateMessage("Successfully added the new chain")
             } else throw "Invalid chain data"
         } catch (error) {
             setErrorMessage(String(error));
+            setUpdateMessage("");
         }
     }
 
@@ -43,10 +46,11 @@ const CustomNetwork = ({ updateChain }) => {
                 window.chainStore.removeChain(jsonFile.chainId);
                 // set chain to auto trigger new chain store
                 setChainInfos(window.chainStore.chainInfos);
-                alert("Successfully removed the provided chain")
+                setUpdateMessage("Successfully removed the provided chain")
             } else throw "invalid chain data"
         } catch (error) {
             setErrorMessage(String(error));
+            setUpdateMessage("");
         }
     }
 
@@ -101,7 +105,7 @@ const CustomNetwork = ({ updateChain }) => {
                         <div style={{ display: 'flex', color: 'white' }}>
                             {`file name: ${jsonFileName}`}
                         </div>
-                        <Button onClick={() => { setJsonFile({}); setJsonFileName("") }}>
+                        <Button onClick={() => { setJsonFile({}); setJsonFileName(""); setUpdateMessage(""); setErrorMessage("") }}>
                             Remove json chain
                         </Button>
                     </div>
@@ -110,6 +114,11 @@ const CustomNetwork = ({ updateChain }) => {
                     <div className="contract-address">
                         <span style={{ color: "red" }}>Error message </span>
                         <p>{errorMessage}</p>
+                    </div>
+                ))}
+                {(updateMessage && (
+                    <div className="contract-address">
+                        <p>{updateMessage}</p>
                     </div>
                 ))}
             </div>
