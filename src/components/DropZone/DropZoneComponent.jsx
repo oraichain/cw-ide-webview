@@ -13,39 +13,38 @@ const getColor = (props) => {
     if (props.isDragActive) {
         return '#2196f3';
     }
-    return '#eeeeee';
+    return '#fffff';
 }
 
 const Container = styled.div`
-  flex: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  border-width: 2px;
-  border-radius: 2px;
+  border-width: 1px;
+  border-radius: 5px;
   border-color: ${props => getColor(props)};
-  border-style: dashed;
-  background-color: #fafafa;
+  background-color: #312e38;
   color: #bdbdbd;
   outline: none;
   margin-top: 10px;
   transition: border .24s ease-in-out;
 `;
 
-const MyDropZone = ({ setSchema }) => {
+const MyDropZone = ({ setSchema, setJson, dropZoneText }) => {
     const onDrop = useCallback(acceptedFiles => {
         // Do something with the files
         acceptedFiles.forEach((file) => {
+            console.log("file name is: ", file)
             const reader = new FileReader()
 
             reader.onabort = () => alert("file reading was aborted")
             reader.onerror = () => alert('file reading has failed')
             reader.onload = () => {
                 // Do whatever you want with the file contents
-                const schema = reader.result;
-                console.log(schema);
-                setSchema(processSchema(JSON.parse(schema)));
+                const result = reader.result;
+                if (setSchema) setSchema(processSchema(JSON.parse(result)));
+                else setJson({ fileName: file.path, content: JSON.parse(result) })
             }
             reader.readAsText(file)
         })
@@ -59,11 +58,7 @@ const MyDropZone = ({ setSchema }) => {
         <div>
             <Container {...getRootProps({ isDragActive, isDragAccept, isDragReject })}>
                 <input {...getInputProps()} />
-                {
-                    isDragActive ?
-                        <p>Drop the schema file here ...</p> :
-                        <p>Drag 'n' drop the contract's schema file here, or click to select file</p>
-                }
+                {dropZoneText}
             </Container>
         </div>
     )

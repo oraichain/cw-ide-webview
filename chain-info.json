@@ -1,8 +1,8 @@
 {
     "rpc": "https://testnet-rpc.orai.io",
     "rest": "https://testnet-lcd.orai.io",
-    "chainId": "Oraichain-testnet",
-    "chainName": "Oraichain Foobar",
+    "chainId": "foo-bar",
+    "chainName": "foo bar",
     "stakeCurrency": {
         "coinDenom": "ORAI",
         "coinMinimalDenom": "orai",
