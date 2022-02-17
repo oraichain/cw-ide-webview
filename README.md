@@ -34,7 +34,7 @@ At the moment, you need to create a PR submitting your network information. Afte
             "coinMinimalDenom": "orai",
             "coinDecimals": 6,
             "coinGeckoId": "oraichain-token",
-            "coinImageUrl": "/public/assets/tokens/orai.png"
+            "coinImageUrl": "http://localhost:3000/public/assets/tokens/orai.png"
         }
     ],
     "feeCurrencies": [
@@ -43,7 +43,7 @@ At the moment, you need to create a PR submitting your network information. Afte
             "coinMinimalDenom": "orai",
             "coinDecimals": 6,
             "coinGeckoId": "oraichain-token",
-            "coinImageUrl": "/public/assets/tokens/orai.png"
+            "coinImageUrl": "http://localhost:3000/public/assets/tokens/orai.png"
         }
     ],
     "gasPriceStep": {
