@@ -17,6 +17,8 @@ class CosmJsLatest extends CosmJsAbstract {
     async handleDeploy(args: { mnemonic?: string, wasmBody: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: cosmwasm.InstantiateOptions }) {
         const { mnemonic, wasmBody, initInput, label, gasAmount, instantiateOptions } = args;
         const { current } = window.chainStore;
+        // if keplr, we will try to suggest chain & enable it
+        if (await window.Keplr.getKeplr()) await window.Keplr.suggestChain();
         // convert wasm body from base64 to bytes array
         const wasmCode = new Uint8Array(decode(wasmBody));
         try {
@@ -69,6 +71,8 @@ class CosmJsLatest extends CosmJsAbstract {
         try {
             const { mnemonic, address, handleMsg, handleOptions, gasAmount } = args;
             const { current } = window.chainStore;
+            // if keplr, we will try to suggest chain & enable it
+            if (await window.Keplr.getKeplr()) await window.Keplr.suggestChain();
             const wallet = await this.collectWallet(mnemonic);
             const [firstAccount] = await wallet.getAccounts();
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasAmount ? GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`) : undefined, prefix: current.bech32Config.bech32PrefixAccAddr });
