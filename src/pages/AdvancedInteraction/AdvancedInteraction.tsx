@@ -1,9 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 // import Form from "@rjsf/core";
 import '../../themes/style.scss';
-import { Button, Input, Select, Spin } from 'antd';
-import { ReactComponent as IconSelect } from '../../assets/icons/code.svg';
-import { ReactComponent as IconChain } from '../../assets/icons/chain.svg';
+import { Button, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
 import ReactJson from 'react-json-view';
@@ -14,13 +12,11 @@ const antIcon = (
     <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
 );
 
-const { Option } = Select;
-
 const AdvancedInteraction = () => {
-    const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
+    const DEFAULT_CHAINMAME = window.chainStore.current.chainName;
     const [mnemonic, setMnemonic] = useState('');
     const [gasPrice, setGasPrice] = useState(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-    const [gasDenom, setGasDenom] = useState(window.chainStore.chainInfos[0].feeCurrencies[0].coinMinimalDenom);
+    const [gasDenom, setGasDenom] = useState(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
     const [gasLimit, setGasLimit] = useState(undefined);
     const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
     const [interactOption, setInteractOption] = useState("query");
@@ -42,7 +38,6 @@ const AdvancedInteraction = () => {
 
     const onQuery = async (data) => {
         setErrorMessage("");
-        window.chainStore.setChain(chainName);
         setIsInteractionLoading(true);
         let cosmJs = new CosmJsFactory(window.chainStore.current);
         try {
@@ -59,7 +54,6 @@ const AdvancedInteraction = () => {
 
     const onHandle = async (data) => {
         setErrorMessage("");
-        window.chainStore.setChain(chainName);
         setIsInteractionLoading(true);
         let cosmJs = new CosmJsFactory(window.chainStore.current);
         try {

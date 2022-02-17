@@ -1,12 +1,10 @@
 // hot reload
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "./logo.png";
 // import Form from "@rjsf/core";
 import Form from '@rjsf/antd';
 import './themes/style.scss';
-import { Input, Select, Spin } from 'antd';
-import { ReactComponent as IconSelect } from './assets/icons/code.svg';
-import { ReactComponent as IconChain } from './assets/icons/chain.svg';
+import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import _ from "lodash";
 import { CustomForm, CustomInput, CustomNetwork, CustomSelect, GasForm } from "./components";
@@ -20,10 +18,8 @@ const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
 );
 
-const { Option } = Select;
-
 const App = () => {
-  const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
+  const DEFAULT_CHAINMAME = window.chainStore.current.chainName;
   const [initSchemaData, setInitSchemaData] = useState(undefined);
   const [mnemonic, setMnemonic] = useState('');
   const [isBuilt, setIsBuilt] = useState(false);
@@ -31,7 +27,7 @@ const App = () => {
   const [wasmBody, setWasmBody] = useState();
   const [label, setLabel] = useState('');
   const [gasPrice, setGasPrice] = useState(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-  const [gasDenom, setGasDenom] = useState(window.chainStore.chainInfos[0].feeCurrencies[0].coinMinimalDenom);
+  const [gasDenom, setGasDenom] = useState(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
   const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -101,7 +97,6 @@ const App = () => {
     };
     resetMessage();
     setIsLoading(true);
-    window.chainStore.setChain(chainName);
 
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);

@@ -10,7 +10,7 @@ const { Option } = Select;
 
 const CustomNetwork = ({ updateChain }) => {
 
-    const DEFAULT_CHAINMAME = window.chainStore.chainInfos[0].chainName;
+    const DEFAULT_CHAINMAME = window.chainStore.current.chainName;
     const [chainInfos, setChainInfos] = useState(window.chainStore.chainInfos);
     const [jsonFile, setJsonFile] = useState({});
     const [jsonFileName, setJsonFileName] = useState("");

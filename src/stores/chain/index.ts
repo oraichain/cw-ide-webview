@@ -67,6 +67,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
     @action
     setChain(chainName: string) {
         let chainId = this.getChainId(chainName);
+        console.log("chain id: ", chainId)
         this.setChainId(chainId);
     }
 
@@ -97,7 +98,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
         // also update in local storage
         localStorage.setItem('chain-infos', JSON.stringify(chainInfos));
     }
-
     private getChainId(chainName: string) {
         if (chainName) {
             let chainInfo = this.chainInfos.find(info => info.chainName === chainName);
@@ -106,7 +106,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
         }
         throw new Error("Invalid chain name");
     }
-
     private getChainInfosRaw() {
         let chainInfos: ChainInfoWithExplorer[] = [];
         for (let chainInfo of this.chainInfos) {
