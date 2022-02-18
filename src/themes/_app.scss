@@ -16,7 +16,12 @@
     .app-title {
       font-size: 1.8rem;
       font-family: "Bebas";
-      background: -webkit-linear-gradient(45deg, #f5cca3 0%, #fd8ab6 50.52%, #9a5beb 100%);
+      background: -webkit-linear-gradient(
+        45deg,
+        #f5cca3 0%,
+        #fd8ab6 50.52%,
+        #9a5beb 100%
+      );
       background-clip: text;
       margin: 0 0 0 12px;
       -webkit-background-clip: text;
@@ -26,7 +31,12 @@
 
   .app-divider {
     height: 1px;
-    background: linear-gradient(45deg, #f5cca3 0%, #fd8ab6 50.52%, #9a5beb 100%);
+    background: linear-gradient(
+      45deg,
+      #f5cca3 0%,
+      #fd8ab6 50.52%,
+      #9a5beb 100%
+    );
     width: 100%;
     margin: 20px 0;
     opacity: 0.2;
@@ -85,9 +95,74 @@
 .chain-management {
   display: flex;
   flex-direction: column;
+
+  .primary-button {
+    background: #7954ff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    // font-weight: bold;
+    font-size: 16px;
+    font-family: "Courier";
+
+    &:hover,
+    &:focus {
+      background: #5e3fce;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      // font-weight: bold;
+      font-size: 16px;
+      font-family: "Courier";
+    }
+  }
+
+  .remove-button {
+    background: none;
+    border: none;
+    color: #ff6969;
+    border-radius: 4px;
+    // font-weight: bold;
+    font-size: 16px;
+    font-family: "Courier";
+
+    &:hover,
+    &:focus {
+      background: none;
+      border: none;
+      color: #cc4a4a;
+      border-radius: 4px;
+      // font-weight: bold;
+      font-size: 16px;
+      font-family: "Courier";
+    }
+  }
+
+  .remove-secondary {
+    background: none;
+    border: none;
+    color: #c4c6c9;
+    border-radius: 4px;
+    border: 1px solid #c4c6c9;
+    font-size: 14px;
+    font-family: "Courier";
+
+    &:hover,
+    &:focus {
+      background: none;
+      border: none;
+      color: #c4c6c9;
+      border-radius: 4px;
+      border: 1px solid #c4c6c9;
+      font-size: 14px;
+      font-family: "Courier";
+    }
+  }
+
   .update-chain {
     padding-top: 15px;
     padding-bottom: 15px;
+    display: flex;
   }
 }
 
@@ -96,6 +171,27 @@
   padding: 16px 16px 0px 16px;
   margin-top: 40px;
   border-radius: 4px;
+
+  .primary-button {
+    background: #7954ff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    // font-weight: bold;
+    font-size: 16px;
+    font-family: "Courier";
+
+    &:hover,
+    &:focus {
+      background: #5e3fce;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      // font-weight: bold;
+      font-size: 16px;
+      font-family: "Courier";
+    }
+  }
 
   .please-text {
     color: #c4c6c9;
