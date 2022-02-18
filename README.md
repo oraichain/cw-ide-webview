@@ -56,11 +56,11 @@ At the moment, you need to create a PR submitting your network information. Afte
         "ibc-transfer",
         "cosmwasm"
     ],
-    "explorerUrlToTx": "https://testnet.scan.orai.io/txs/${txHash}",
-    "hdPath": "m/44'/118'/0'/0/0",
-    "cosmwasmVersion": "0.13.2",
-    "faucet": "https://testnet-faucet.web.app/"
+    "hdPath": "m/44'/118'/0'/0/0", // the wallet path of your network.
+    "cosmwasmVersion": "0.13.2" // the cosmwasm std your network is using.
 }
 ```
 
-Please append the network information into the [config file](https://github.com/oraichain/vscode-cosmwasm/blob/master/src/config.ts).
+It follows the same format as that of Keplr so that the webview can work with the extension. We also add a few attributes, which include comments above.
+
+Please append the network information into the [config file](https://github.com/oraichain/vscode-cosmwasm/blob/master/src/config.ts) if you prefer to let your network be included in the IDE permanently. Please note that this requires reviewing & a pull request. The IDE also provides a feature that helps you add and remove custom networks & store them locally.

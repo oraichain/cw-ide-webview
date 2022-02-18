@@ -318,7 +318,8 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         ],
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://explorer.test.provenance.io/tx/{txHash}',
-        cosmwasmVersion: '0.16.0'
+        cosmwasmVersion: '0.16.0',
+        hdPath: "m/44'/118'/0'/0/0",
     },
     {
         rpc: 'https://rpc-stargateworld.fetch.ai',

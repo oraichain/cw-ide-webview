@@ -6,9 +6,9 @@ import { ChainInfo } from '@keplr-wallet/types';
 
 export interface ChainInfoWithExplorer extends ChainInfo {
     // Formed as "https://explorer.com/{txHash}"
-    explorerUrlToTx: string;
+    explorerUrlToTx?: string;
     faucet?: string;
-    hdPath?: string,
+    hdPath: string,
     cosmwasmVersion: string,
 }
 
