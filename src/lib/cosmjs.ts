@@ -21,7 +21,7 @@ class CosmJs extends CosmJsAbstract {
    * @param sentFunds - funds sent the contract
    * @returns - Contract address after the instantiation process
    */
-    async handleDeploy(args: { mnemonic: string, wasmBody: string, initInput: any, label?: string | undefined, source?: string | undefined, builder?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: InstantiateOptions, gasLimits?: { upload: 5000000, init: 5000000 } }) {
+    async handleDeploy(args: { mnemonic: string, wasmBody: string, initInput: any, label?: string | undefined, source?: string | undefined, builder?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: InstantiateOptions, gasLimits?: { upload: 15000000, init: 15000000 } }) {
         const { mnemonic, wasmBody, initInput, label, source, gasAmount, builder, instantiateOptions, gasLimits } = args;
         const { current } = window.chainStore;
         // if keplr, we will try to suggest chain & enable it
@@ -31,6 +31,7 @@ class CosmJs extends CosmJsAbstract {
         try {
             const wallet = await this.collectWallet(mnemonic);
             const [firstAccount] = await wallet.getAccounts();
+            console.log("first account: ", firstAccount);
             const gasPrice = GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`);
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasPrice, prefix: current.bech32Config.bech32PrefixAccAddr, gasLimits });
 

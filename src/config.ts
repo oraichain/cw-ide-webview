@@ -51,13 +51,13 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         faucet: 'https://testnet-faucet.web.app/'
     },
     {
-        rpc: 'https://rpc.sandynet.cosmwasm.com/',
-        rest: 'https://lcd.sandynet.cosmwasm.com/',
-        chainId: 'sandynet-1',
-        chainName: 'Sandynet',
+        rpc: 'https://rpc.cliffnet.cosmwasm.com/',
+        rest: 'https://lcd.cliffnet.cosmwasm.com/',
+        chainId: 'cliffnet-1',
+        chainName: 'Cliffnet',
         stakeCurrency: {
-            coinDenom: 'MAYA',
-            coinMinimalDenom: 'umaya',
+            coinDenom: 'ROCK',
+            coinMinimalDenom: 'urock',
             coinDecimals: 6,
             coinGeckoId: 'none',
         },
@@ -67,16 +67,22 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         bech32Config: Bech32Address.defaultBech32Config('wasm'),
         currencies: [
             {
-                coinDenom: 'MAYA',
-                coinMinimalDenom: 'umaya',
+                coinDenom: 'PEBBLE',
+                coinMinimalDenom: 'upebble',
+                coinDecimals: 6,
+                coinGeckoId: 'none',
+            },
+            {
+                coinDenom: 'ROCK',
+                coinMinimalDenom: 'urock',
                 coinDecimals: 6,
                 coinGeckoId: 'none',
             }
         ],
         feeCurrencies: [
             {
-                coinDenom: 'BAY',
-                coinMinimalDenom: 'ubay',
+                coinDenom: 'PEBBLE',
+                coinMinimalDenom: 'upebble',
                 coinDecimals: 6,
                 coinGeckoId: 'none',
             },
@@ -87,10 +93,10 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
             high: 0.004,
         },
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
-        explorerUrlToTx: 'https://block-explorer.sandynet.cosmwasm.com/transactions/{txHash}',
+        explorerUrlToTx: 'https://block-explorer.cliffnet.cosmwasm.com/transactions/{txHash}',
         hdPath: "m/44'/118'/0'/0/0",
         cosmwasmVersion: '1.0.0',
-        faucet: 'https://faucet.sandynet.cosmwasm.com/'
+        faucet: 'https://faucet.cliffnet.cosmwasm.com/'
     },
     {
         rpc: 'https://rpc.uni.juno.deuslabs.fi',

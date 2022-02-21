@@ -24,6 +24,7 @@ class CosmJsLatest extends CosmJsAbstract {
         try {
             const wallet = await this.collectWallet(mnemonic);
             const [firstAccount] = await wallet.getAccounts();
+            console.log("first account: ", firstAccount);
             const gasPrice = GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`);
             const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasPrice, prefix: current.bech32Config.bech32PrefixAccAddr });
 
