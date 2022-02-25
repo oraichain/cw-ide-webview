@@ -20,19 +20,16 @@ const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
 );
 
-const AdvancedInteraction = () => {
-  const DEFAULT_CHAINMAME = window.chainStore.current.chainName;
+const AdvancedInteraction = ({ children, updateChain, gasData }) => {
   const [mnemonic, setMnemonic] = useState("");
-  const [gasPrice, setGasPrice] = useState(
-    window.chainStore.current.gasPriceStep?.average
-      ? window.chainStore.current.gasPriceStep.average.toString()
-      : "0"
-  );
-  const [gasDenom, setGasDenom] = useState(
-    window.chainStore.current.feeCurrencies[0].coinMinimalDenom
-  );
-  const [gasLimit, setGasLimit] = useState(undefined);
-  const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
+  // const [gasPrice, setGasPrice] = useState(
+  //   window.chainStore.current.gasPriceStep?.average
+  //     ? window.chainStore.current.gasPriceStep.average.toString()
+  //     : "0"
+  // );
+  // const [gasDenom, setGasDenom] = useState(
+  //   window.chainStore.current.feeCurrencies[0].coinMinimalDenom
+  // );
   const [interactOption, setInteractOption] = useState("query");
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -44,15 +41,15 @@ const AdvancedInteraction = () => {
   const [handleSchema, setHandleSchema] = useState({});
   const handleOptionsRef = useRef(null);
 
-  const updateChain = (value) => {
-    setChainName(value);
-    setGasPrice(
-      window.chainStore.current.gasPriceStep?.average
-        ? window.chainStore.current.gasPriceStep.average.toString()
-        : "0"
-    );
-    setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
-  };
+  // const updateChain = (value) => {
+  //   setChainName(value);
+  //   setGasPrice(
+  //     window.chainStore.current.gasPriceStep?.average
+  //       ? window.chainStore.current.gasPriceStep.average.toString()
+  //       : "0"
+  //   );
+  //   setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
+  // };
 
   const onQuery = async (data) => {
     setErrorMessage("");
@@ -84,9 +81,9 @@ const AdvancedInteraction = () => {
         mnemonic,
         address: contractAddr,
         handleMsg: finalMessage,
-        gasAmount: { amount: gasPrice, denom: gasDenom },
+        gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: {
-          exec: gasLimit ? parseInt(gasLimit) : undefined,
+          exec: gasData.gasLimit ? parseInt(gasData.gasLimit) : undefined,
         },
         handleOptions: handleOptionsRef.current,
       });
@@ -130,14 +127,7 @@ const AdvancedInteraction = () => {
             <span>Contract Execute </span>
           </div>
           <div className="wrap-form">
-            <GasForm
-              gasPrice={gasPrice}
-              setGasPrice={setGasPrice}
-              gasDenom={gasDenom}
-              setGasDenom={setGasDenom}
-              gasLimit={gasLimit}
-              setGasLimit={setGasLimit}
-            />
+            {children}
             <HandleOptions handleOptionsRef={handleOptionsRef} />
             {_.isEmpty(handleSchema) && (
               <div style={{ marginBottom: "10px" }}>
@@ -187,12 +177,12 @@ const AdvancedInteraction = () => {
             <span>Contract Query </span>
           </div>
           <div className="wrap-form">
-            <CustomInput
+            {/* <CustomInput
               inputHeader="Gas denom"
               input={gasDenom}
               setInput={setGasDenom}
               placeholder="eg. orai"
-            />
+            /> */}
             {_.isEmpty(querySchema) && (
               <div style={{ marginBottom: "24px" }}>
                 <CustomInput

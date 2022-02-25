@@ -26,8 +26,9 @@ const App = () => {
   const [isDeployed, setIsDeployed] = useState(false);
   const [wasmBody, setWasmBody] = useState();
   const [label, setLabel] = useState('');
-  const [gasPrice, setGasPrice] = useState(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-  const [gasDenom, setGasDenom] = useState(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
+  // const [gasPrice, setGasPrice] = useState(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
+  // const [gasDenom, setGasDenom] = useState(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
+  const [gasData, setGasData] = useState({ gasPrice: window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0", gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom, gasLimit: "" });
   const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,7 +41,7 @@ const App = () => {
   const [deploySource, setDeploySource] = useState('');
   const [deployBuilder, setDeployBuilder] = useState('');
   const [instantiateOptions, setOptions] = useState(undefined);
-  const [gasLimit, setGasLimit] = useState(undefined);
+  // const [gasLimit, setGasLimit] = useState(undefined);
   const [interactOption, setInteractOption] = useState("query");
 
   // Handle messages sent from the extension to the webview
@@ -52,7 +53,6 @@ const App = () => {
     }
     // if message payload is build => post message back to extension to collect schema file
     if (message.action === "build") {
-      console.log("message schema file: ", message.schemaFile);
       setInitSchema(processSchema(JSON.parse(message.schemaFile)));
       setHandleSchema({});
       setQuerySchema({});
@@ -61,7 +61,6 @@ const App = () => {
       setErrorMessage("");
     }
     if (message.action === "deploy") {
-      console.log("message deploy");
       // console.log("query file: ", message.queryFile);
       setHandleSchema(processSchema(JSON.parse(message.handleFile)));
       setQuerySchema(processSchema(JSON.parse(message.queryFile)));
@@ -76,9 +75,11 @@ const App = () => {
   });
 
   const updateChain = (value) => {
+    console.log("current chain store: ", window.chainStore.current);
     setChainName(value);
-    setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-    setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
+    setGasData({ ...gasData, gasPrice: window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0", gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom })
+    // setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
+    // setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
   }
 
   const handleOnChange = _.throttle(({ formData }) => {
@@ -101,7 +102,7 @@ const App = () => {
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
-      let address = await cosmJs.current.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, source: deploySource, builder: deployBuilder ? deployBuilder : undefined, initInput: initSchemaData, label, gasAmount: { amount: gasPrice, denom: gasDenom }, instantiateOptions });
+      let address = await cosmJs.current.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, source: deploySource, builder: deployBuilder ? deployBuilder : undefined, initInput: initSchemaData, label, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, instantiateOptions });
       console.log("contract address: ", address);
       setContractAddr(address);
       setIsDeployed(true);
@@ -135,7 +136,7 @@ const App = () => {
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
-      const queryResult = await cosmJs.current.execute({ mnemonic, address: contractAddr, handleMsg: JSON.stringify(data), gasAmount: { amount: gasPrice, denom: gasDenom } });
+      const queryResult = await cosmJs.current.execute({ mnemonic, address: contractAddr, handleMsg: JSON.stringify(data), gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom } });
       console.log("query result: ", queryResult);
       setResultJson({ data: queryResult });
     } catch (error) {
@@ -164,7 +165,7 @@ const App = () => {
               <div className="wrap-form">
                 <span className="please-text">Please fill out the form below to deploy the contract:</span>
                 <CustomInput inputHeader="input label" input={label} setInput={setLabel} />
-                <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+                <GasForm gasData={gasData} setGasData={setGasData} />
                 <CustomInput inputHeader="Source code url" input={deploySource} setInput={setDeploySource} placeholder="eg. https://foobar.com" />
                 <CustomInput inputHeader="Contract builder (Docker img with tag)" input={deployBuilder} setInput={setDeployBuilder} placeholder="eg. orai/orai:0.40.1" />
                 <div className="input-form">
@@ -216,7 +217,7 @@ const App = () => {
               <div className="contract-address">
                 <span>Contract Execute </span>
               </div>
-              <GasForm gasPrice={gasPrice} setGasPrice={setGasPrice} gasDenom={gasDenom} setGasDenom={setGasDenom} gasLimit={gasLimit} setGasLimit={setGasLimit} />
+              <GasForm gasData={gasData} setGasData={setGasData} />
               <CustomForm schema={handleSchema} onSubmit={(data) => onHandle(data)} />
             </div>
           }
@@ -253,7 +254,9 @@ const App = () => {
         </div>
       )}
       {!isBuilt && !isDeployed && !isLoading && !errorMessage && (
-        <AdvancedInteraction />
+        <AdvancedInteraction updateChain={updateChain} gasData={gasData}>
+          <GasForm gasData={gasData} setGasData={setGasData} />
+        </AdvancedInteraction>
       )}
     </div>
   );

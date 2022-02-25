@@ -71,6 +71,7 @@ const CustomNetwork = ({ updateChain }) => {
         style={{ width: 240 }}
         suffixIcon={<IconSelect />}
         onSelect={(value) => {
+          console.log("on select change chain data")
           window.chainStore.setChain(value);
           updateChain(value);
           // setChainName(value);
