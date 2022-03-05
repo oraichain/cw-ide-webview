@@ -15,6 +15,12 @@ export default class CosmJsAbstract {
     async handleDeploy(_args: any): Promise<any> {
         throw new Error("Method 'handleDeploy()' must be implemented.");
     }
+    async handleUpload(_args: any): Promise<any> {
+        throw new Error("Method 'handleUpload()' must be implemented.");
+    }
+    async handleInstantiate(_args: any): Promise<any> {
+        throw new Error("Method 'handleInstantiate()' must be implemented.");
+    }
     async query(_address: string, _queryMsg: string): Promise<any> {
         throw new Error("Method 'query()' must be implemented.");
     }

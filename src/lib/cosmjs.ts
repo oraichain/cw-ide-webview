@@ -52,6 +52,58 @@ class CosmJs extends CosmJsAbstract {
         }
     }
 
+    async handleUpload(args: { mnemonic: string, wasmBody: string, source?: string | undefined, builder?: string | undefined, gasAmount: { amount: string, denom: string }, gasLimits?: { upload: 15000000, init: 15000000 } }) {
+        const { mnemonic, wasmBody, source, gasAmount, builder, gasLimits } = args;
+        const { current } = window.chainStore;
+        // if keplr, we will try to suggest chain & enable it
+        if (await window.Keplr.getKeplr()) await window.Keplr.suggestChain();
+        // convert wasm body from base64 to bytes array
+        const wasmCode = new Uint8Array(decode(wasmBody));
+        try {
+            const wallet = await this.collectWallet(mnemonic);
+            const [firstAccount] = await wallet.getAccounts();
+            console.log("first account: ", firstAccount);
+            const gasPrice = GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`);
+            const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasPrice, prefix: current.bech32Config.bech32PrefixAccAddr, gasLimits });
+
+            // upload wasm contract to get code id
+            const uploadResult = await client.upload(firstAccount.address, wasmCode, { source, builder });
+            console.log("upload result: ", uploadResult);
+
+            const codeId = uploadResult.codeId;
+
+            return codeId;
+        } catch (error) {
+            console.log("error in handle upload CosmJs: ", error);
+            throw error;
+        }
+    }
+
+    async handleInstantiate(args: { mnemonic: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: InstantiateOptions, gasLimits?: { upload: 15000000, init: 15000000 }, codeId: number }) {
+        const { mnemonic, initInput, label, gasAmount, instantiateOptions, gasLimits, codeId } = args;
+        const { current } = window.chainStore;
+        // if keplr, we will try to suggest chain & enable it
+        if (await window.Keplr.getKeplr()) await window.Keplr.suggestChain();
+        // convert wasm body from base64 to bytes array
+        try {
+            const wallet = await this.collectWallet(mnemonic);
+            const [firstAccount] = await wallet.getAccounts();
+            console.log("first account: ", firstAccount);
+            const gasPrice = GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`);
+            const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasPrice, prefix: current.bech32Config.bech32PrefixAccAddr, gasLimits });
+
+            const input = initInput;
+
+            // instantiate contract with input
+            const instantiateResult = await client.instantiate(firstAccount.address, codeId, input, label ? label : "smart contract", instantiateOptions);
+            console.log("instantiate result: ", instantiateResult);
+            return instantiateResult.contractAddress;
+        } catch (error) {
+            console.log("error in handle instantiate CosmJs: ", error);
+            throw error;
+        }
+    }
+
     /**
      * A wrapper method to query state of a smart contract
      * @param address - contract address

@@ -19,17 +19,14 @@ const antIcon = (
 );
 
 const App = () => {
-  const DEFAULT_CHAINMAME = window.chainStore.current.chainName;
   const [initSchemaData, setInitSchemaData] = useState(undefined);
   const [mnemonic, setMnemonic] = useState('');
   const [isBuilt, setIsBuilt] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(false);
   const [isDeployed, setIsDeployed] = useState(false);
   const [wasmBody, setWasmBody] = useState();
   const [label, setLabel] = useState('');
-  // const [gasPrice, setGasPrice] = useState(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-  // const [gasDenom, setGasDenom] = useState(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
   const [gasData, setGasData] = useState({ gasPrice: window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0", gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom, gasLimit: "" });
-  const [chainName, setChainName] = useState(DEFAULT_CHAINMAME);
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [initSchema, setInitSchema] = useState(undefined);
@@ -41,8 +38,9 @@ const App = () => {
   const [deploySource, setDeploySource] = useState('');
   const [deployBuilder, setDeployBuilder] = useState('');
   const [instantiateOptions, setOptions] = useState(undefined);
-  // const [gasLimit, setGasLimit] = useState(undefined);
   const [interactOption, setInteractOption] = useState("query");
+  const [codeId, setCodeId] = useState(undefined);
+  const [ideAction, setIdeAction] = useState('');
 
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: MessageEvent) => {
@@ -57,14 +55,28 @@ const App = () => {
       setHandleSchema({});
       setQuerySchema({});
       setIsBuilt(true);
+      setIsUploaded(false);
       setIsDeployed(false);
+      setCodeId(undefined);
+      setContractAddr("");
       setErrorMessage("");
     }
-    if (message.action === "deploy") {
+    else if (message.action === "deploy") {
       // console.log("query file: ", message.queryFile);
       setHandleSchema(processSchema(JSON.parse(message.handleFile)));
       setQuerySchema(processSchema(JSON.parse(message.queryFile)));
       onDeploy(message.mnemonic, message.payload);
+    }
+    else if (message.action === "upload") {
+      console.log("message upload: ", message);
+      setInitSchema(processSchema(JSON.parse(message.schemaFile)));
+      onUpload(message.mnemonic, message.payload);
+    }
+    else if (message.action === "instantiate") {
+      console.log("message instantiate: ", message);
+      setHandleSchema(processSchema(JSON.parse(message.handleFile)));
+      setQuerySchema(processSchema(JSON.parse(message.queryFile)));
+      onInstantiate(message.mnemonic);
     }
   };
   useEffect(() => {
@@ -76,10 +88,7 @@ const App = () => {
 
   const updateChain = (value) => {
     console.log("current chain store: ", window.chainStore.current);
-    setChainName(value);
     setGasData({ ...gasData, gasPrice: window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0", gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom })
-    // setGasPrice(window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0");
-    // setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
   }
 
   const handleOnChange = _.throttle(({ formData }) => {
@@ -90,14 +99,85 @@ const App = () => {
     setOptions(formData);
   }, 2000, { 'trailing': true })
 
+  const actionHandling = (action) => {
+    resetMessage();
+    setIsLoading(true);
+    setIdeAction(action);
+  }
+
+  const errorActionHandling = (error) => {
+    setIsBuilt(true);
+    setErrorMessage(String(error));
+  }
+
+  const onUpload = async (mnemonic: any, wasmBytes: any) => {
+    console.log("wasm bytes: ", wasmBytes)
+    if (!wasmBytes) {
+      setErrorMessage("Wasm bytes is empty!");
+      return;
+    }
+    actionHandling("Uploading");
+
+    try {
+      let cosmJs = new CosmJsFactory(window.chainStore.current);
+      // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
+      let codeId = await cosmJs.current.handleUpload({ mnemonic, wasmBody: wasmBytes, source: deploySource, builder: deployBuilder ? deployBuilder : undefined, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom } });
+      setCodeId(codeId);
+      setIsUploaded(true);
+      setIsBuilt(true);
+      setIsDeployed(false);
+      setContractAddr("");
+
+      // clear all uploading data
+      setDeploySource("");
+      setDeployBuilder("");
+    } catch (error) {
+      errorActionHandling(String(error));
+    }
+    setIsLoading(false);
+  };
+
+  const onInstantiate = async (mnemonic: any) => {
+    console.log("Instantiate data: ", initSchemaData);
+    if (!initSchemaData) {
+      setErrorMessage("Instantiate data is empty!");
+      return;
+    };
+    if (!codeId) {
+      setErrorMessage("Code id is empty!");
+      return;
+    };
+    actionHandling("Instantiating");
+
+    try {
+      let cosmJs = new CosmJsFactory(window.chainStore.current);
+      // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
+      let address = await cosmJs.current.handleInstantiate({ mnemonic, codeId: parseInt(codeId), initInput: initSchemaData, label, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, instantiateOptions });
+      console.log("contract address: ", address);
+      setContractAddr(address);
+      setIsDeployed(true);
+      setIsBuilt(false);
+      setIsUploaded(false);
+      setCodeId(undefined);
+
+      // clear all instantiate data
+      setInitSchemaData(undefined);
+      setInitSchema(undefined);
+      setCodeId(undefined);
+      setOptions(undefined);
+    } catch (error) {
+      errorActionHandling(String(error));
+    }
+    setIsLoading(false);
+  };
+
   const onDeploy = async (mnemonic: any, wasmBytes?: any) => {
     console.log("Instantiate data: ", initSchemaData);
     if (!initSchemaData) {
       setErrorMessage("Instantiate data is empty!");
       return;
     };
-    resetMessage();
-    setIsLoading(true);
+    actionHandling("Deploying");
 
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);
@@ -107,10 +187,20 @@ const App = () => {
       setContractAddr(address);
       setIsDeployed(true);
       setIsBuilt(false);
+      setIsUploaded(false);
+      setCodeId(undefined);
+      setContractAddr("");
+
+      // clear all deploy data
       setInitSchema(undefined);
+      setInitSchemaData(undefined);
+      setCodeId(undefined);
+      setOptions(undefined);
+      setDeploySource("");
+      setDeployBuilder("");
+
     } catch (error) {
-      setIsBuilt(true);
-      setErrorMessage(String(error));
+      errorActionHandling(String(error));
     }
     setIsLoading(false);
   };
@@ -166,8 +256,13 @@ const App = () => {
                 <span className="please-text">Please fill out the form below to deploy the contract:</span>
                 <CustomInput inputHeader="input label" input={label} setInput={setLabel} />
                 <GasForm gasData={gasData} setGasData={setGasData} />
-                <CustomInput inputHeader="Source code url" input={deploySource} setInput={setDeploySource} placeholder="eg. https://foobar.com" />
-                <CustomInput inputHeader="Contract builder (Docker img with tag)" input={deployBuilder} setInput={setDeployBuilder} placeholder="eg. orai/orai:0.40.1" />
+                <CustomInput inputHeader="Code Id" input={codeId} setInput={setCodeId} />
+                {!isUploaded && (
+                  <div>
+                    <CustomInput inputHeader="Source code url" input={deploySource} setInput={setDeploySource} placeholder="eg. https://foobar.com" />
+                    <CustomInput inputHeader="Contract builder (Docker img with tag)" input={deployBuilder} setInput={setDeployBuilder} placeholder="eg. orai/orai:0.40.1" />
+                  </div>
+                )}
                 <div className="input-form">
                   <Form
                     schema={instantiateOptionsSchema}
@@ -205,7 +300,7 @@ const App = () => {
       ) : (
         <div className="deploying">
           <Spin indicator={antIcon} />
-          <span>Deploying ...</span>
+          <span>{ideAction} ...</span>
         </div>
       )}
       {isDeployed && (
@@ -253,7 +348,7 @@ const App = () => {
           )}
         </div>
       )}
-      {!isBuilt && !isDeployed && !isLoading && !errorMessage && (
+      {!isBuilt && !isDeployed && !isLoading && !isUploaded && !errorMessage && (
         <AdvancedInteraction updateChain={updateChain} gasData={gasData}>
           <GasForm gasData={gasData} setGasData={setGasData} />
         </AdvancedInteraction>
