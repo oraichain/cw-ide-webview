@@ -189,7 +189,6 @@ const App = () => {
       setIsBuilt(false);
       setIsUploaded(false);
       setCodeId(undefined);
-      setContractAddr("");
 
       // clear all deploy data
       setInitSchema(undefined);
