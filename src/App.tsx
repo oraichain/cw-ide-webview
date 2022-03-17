@@ -12,7 +12,7 @@ import ReactJson from 'react-json-view';
 import CosmJsFactory from "./lib/cosmjs-factory";
 import instantiateOptionsSchema from "./types/schema/instantiate-options";
 import { AdvancedInteraction } from "./pages";
-import { processSchema } from "./lib/utils";
+import { parseGasLimits, processSchema } from "./lib/utils";
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -26,7 +26,7 @@ const App = () => {
   const [isDeployed, setIsDeployed] = useState(false);
   const [wasmBody, setWasmBody] = useState();
   const [label, setLabel] = useState('');
-  const [gasData, setGasData] = useState({ gasPrice: window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0", gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom, gasLimit: "" });
+  const [gasData, setGasData] = useState({ gasPrice: window.chainStore.current.gasPriceStep?.average ? window.chainStore.current.gasPriceStep.average.toString() : "0", gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom, gasLimits: "" });
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [initSchema, setInitSchema] = useState(undefined);
@@ -121,7 +121,7 @@ const App = () => {
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
-      let codeId = await cosmJs.current.handleUpload({ mnemonic, wasmBody: wasmBytes, source: deploySource, builder: deployBuilder ? deployBuilder : undefined, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom } });
+      let codeId = await cosmJs.current.handleUpload({ mnemonic, wasmBody: wasmBytes, source: deploySource, builder: deployBuilder ? deployBuilder : undefined, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, gasLimits: parseGasLimits(gasData.gasLimits) });
       setCodeId(codeId);
       setIsUploaded(true);
       setIsBuilt(true);
@@ -152,7 +152,7 @@ const App = () => {
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
-      let address = await cosmJs.current.handleInstantiate({ mnemonic, codeId: parseInt(codeId), initInput: initSchemaData, label, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, instantiateOptions });
+      let address = await cosmJs.current.handleInstantiate({ mnemonic, codeId: parseInt(codeId), initInput: initSchemaData, label, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, instantiateOptions, gasLimits: parseGasLimits(gasData.gasLimits) });
       console.log("contract address: ", address);
       setContractAddr(address);
       setIsDeployed(true);
@@ -182,7 +182,7 @@ const App = () => {
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
-      let address = await cosmJs.current.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, source: deploySource, builder: deployBuilder ? deployBuilder : undefined, initInput: initSchemaData, label, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, instantiateOptions });
+      let address = await cosmJs.current.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, source: deploySource, builder: deployBuilder ? deployBuilder : undefined, initInput: initSchemaData, label, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, gasLimits: parseGasLimits(gasData.gasLimits), instantiateOptions });
       console.log("contract address: ", address);
       setContractAddr(address);
       setIsDeployed(true);
