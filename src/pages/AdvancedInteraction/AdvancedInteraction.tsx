@@ -15,6 +15,7 @@ import {
   CustomSelect,
   CustomNetwork,
 } from "src/components";
+import { parseGasLimits } from "src/lib/utils";
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -82,9 +83,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
         address: contractAddr,
         handleMsg: finalMessage,
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
-        gasLimits: {
-          exec: gasData.gasLimit ? parseInt(gasData.gasLimit) : undefined,
-        },
+        gasLimits: parseGasLimits(gasData.gasLimits),
         handleOptions: handleOptionsRef.current,
       });
       console.log("query result: ", queryResult);
