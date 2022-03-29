@@ -274,6 +274,29 @@
   }
 }
 
+
+.contract {
+  width: 100%;
+  text-overflow: hidden;
+
+  span {
+    color: #c4c6c9;
+    font-family: "Bebas";
+    font-size: 18px;
+  }
+
+  p {
+    color: #c4c6c9;
+    font-family: "Courier";
+    font-size: 16px;
+    word-wrap: break-word;
+  }
+}
+
+.click {
+  cursor: pointer;
+}
+
 .deploying {
   margin-top: 40px;
   display: flex;
