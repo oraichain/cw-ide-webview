@@ -28,11 +28,12 @@ class DropdownItem extends React.Component {
             <p onClick={this.onDropdownClicked} className="click" >{this.props.title}</p>
             <Popconfirm
               onConfirm={this.props.removeContract}
-              title="Are you sure delete this address?"
+              title="delete this address?"
               okText="Yes"
+              placement="top"
               cancelText="No"
             >
-              <img className="click" src={RemoveIcon} width={30} height={30} alt="" srcset="" />
+              <img className="click" src={RemoveIcon} width={24} height={24} alt="" srcset="" />
             </Popconfirm>
           </div>
         </div>

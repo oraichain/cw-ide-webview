@@ -438,7 +438,7 @@ const App = () => {
           />
         </div>
       )}
-      {!isLoading ? (
+      {/* {!isLoading ? (
         (contractAddr && (
           <div className="contract-address">
             <span>Contract address </span>
@@ -456,19 +456,33 @@ const App = () => {
           <Spin indicator={antIcon} />
           <span>{ideAction} ...</span>
         </div>
-      )}
+      )} */}
       <div className="contract">
-        <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: 500 }}>
-          <span>Contract List </span>
-          {arrayContract.length ? <Popconfirm
-            title="Are you sure delete all contact address?"
-            onConfirm={() => removeContract("")}
-            okText="Yes"
-            cancelText="No"
-          >
-            <img className="click" src={RemoveIcon} width={30} height={30} alt="" />
-          </Popconfirm> : <img className="click" src={RemoveIcon} width={30} height={30} alt="" />}
-        </div>
+        {!isLoading ? (
+          (arrayContract?.length ? <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: 500 }}>
+            <span>Contract address </span>
+            <Popconfirm
+              title="delete all contact address?"
+              onConfirm={() => removeContract("")}
+              okText="Yes"
+              placement="top"
+              cancelText="No"
+            >
+              <img className="click" src={RemoveIcon} width={24} height={24} alt="" />
+            </Popconfirm>
+          </div> : <></>) ||
+          (errorMessage && (
+            <div className="contract-address">
+              <span style={{ color: "red" }}>Error message </span>
+              <p>{errorMessage}</p>
+            </div>
+          ))
+        ) : (
+          <div className="deploying">
+            <Spin indicator={antIcon} />
+            <span>{ideAction} ...</span>
+          </div>
+        )}
         {arrayContract &&
           arrayContract.map((e: any, i: Number) => {
             return (

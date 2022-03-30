@@ -3,3 +3,24 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #191b20; 
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #191b20; 
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #191b20; 
+}
+
+.app:hover::-webkit-scrollbar-thumb {
+  background: #666;
+}
