@@ -33,7 +33,7 @@ class DropdownItem extends React.Component {
               placement="top"
               cancelText="No"
             >
-              <img className="click" src={RemoveIcon} width={24} height={24} alt="" srcset="" />
+              <img className="click" src={RemoveIcon} width={20} height={20} alt="" srcset="" />
             </Popconfirm>
           </div>
         </div>

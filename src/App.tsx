@@ -81,7 +81,13 @@ const App = () => {
       let queryFile = processSchema(JSON.parse(message.queryFile));
       setHandleSchema(handleFile);
       setQuerySchema(queryFile);
-      onDeploy(message.mnemonic, message.payload, handleFile, queryFile, message.action);
+      onDeploy(
+        message.mnemonic,
+        message.payload,
+        handleFile,
+        queryFile,
+        message.action
+      );
     } else if (message.action === "upload") {
       console.log("message upload: ", message);
       setInitSchema(processSchema(JSON.parse(message.schemaFile)));
@@ -104,6 +110,16 @@ const App = () => {
       window.removeEventListener("message", eventHandler);
     };
   });
+
+  useEffect(() => {
+    const key = "contract-infos";
+    const getLocalStorage: any = window.localStorage.getItem(key);
+    let array: any = [];
+    if (getLocalStorage) {
+      array = [...JSON.parse(getLocalStorage)];
+    }
+    setArrayContract(array);
+  }, []);
 
   const setLocalstorage = async (
     contract: String,
@@ -207,54 +223,37 @@ const App = () => {
     setIsLoading(false);
   };
 
-  // const onInstantiate = async (
-  //   mnemonic: any,
-  //   handleFile: any,
-  //   queryFile: any,
-  //   action: String
-  // ) => {
-  //   setLocalstorage(
-  //     "orai137xuall0gvh0z2cv2xjp4ysxvr3dr9tcrsdsmt",
-  //     handleFile,
-  //     queryFile,
-  //     action
-  //   );
-  //   setContractAddr("orai137xuall0gvh0z2cv2xjp4ysxvr3dr9tcrsdsmt");
-  //   setIsDeployed(true);
-  //   setIsBuilt(false);
-  //   setIsUploaded(false);
-  //   setCodeId(undefined);
-
-  //   // clear all instantiate data
-  //   setInitSchemaData(undefined);
-  //   setInitSchema(undefined);
-  //   setCodeId(undefined);
-  //   setOptions(undefined);
-  // };
-
-  const onInstantiate = async (mnemonic: any, handleFile, queryFile, action) => {
+  const onInstantiate = async (
+    mnemonic: any,
+    handleFile,
+    queryFile,
+    action
+  ) => {
     console.log("Instantiate data: ", initSchemaData);
     if (!initSchemaData) {
       setErrorMessage("Instantiate data is empty!");
       return;
-    };
+    }
     if (!codeId) {
       setErrorMessage("Code id is empty!");
       return;
-    };
+    }
     actionHandling("Instantiating");
 
     try {
       let cosmJs = new CosmJsFactory(window.chainStore.current);
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
-      let address = await cosmJs.current.handleInstantiate({ mnemonic, codeId: parseInt("123"), initInput: initSchemaData, label, gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom }, instantiateOptions, gasLimits: parseGasLimits(gasData.gasLimits) });
+      let address = await cosmJs.current.handleInstantiate({
+        mnemonic,
+        codeId: parseInt("123"),
+        initInput: initSchemaData,
+        label,
+        gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
+        instantiateOptions,
+        gasLimits: parseGasLimits(gasData.gasLimits),
+      });
       console.log("contract address: ", address);
-      setLocalstorage(
-        address,
-        handleFile,
-        queryFile,
-        action
-      );
+      setLocalstorage(address, handleFile, queryFile, action);
       setContractAddr(address);
       setIsDeployed(true);
       setIsBuilt(false);
@@ -262,8 +261,8 @@ const App = () => {
       setCodeId(undefined);
 
       // clear all instantiate data
-      setInitSchemaData(undefined);
-      setInitSchema(undefined);
+      // setInitSchemaData(undefined);
+      // setInitSchema(undefined);
       setCodeId(undefined);
       setOptions(undefined);
     } catch (error) {
@@ -272,7 +271,13 @@ const App = () => {
     setIsLoading(false);
   };
 
-  const onDeploy = async (mnemonic: any, wasmBytes?: any, handleFile?: any, queryFile?: any, action?: any) => {
+  const onDeploy = async (
+    mnemonic: any,
+    wasmBytes?: any,
+    handleFile?: any,
+    queryFile?: any,
+    action?: any
+  ) => {
     console.log("Instantiate data: ", initSchemaData);
     if (!initSchemaData) {
       setErrorMessage("Instantiate data is empty!");
@@ -295,21 +300,16 @@ const App = () => {
         instantiateOptions,
       });
       console.log("contract address: ", address);
-      setLocalstorage(
-        address,
-        handleFile,
-        queryFile,
-        action,
-      );
-      setContractAddr(address);
-      setIsDeployed(true);
+      setLocalstorage(address, handleFile, queryFile, action);
+      // setContractAddr(address);
+      // setIsDeployed(true);
       setIsBuilt(false);
       setIsUploaded(false);
       setCodeId(undefined);
 
       // clear all deploy data
-      setInitSchema(undefined);
       setInitSchemaData(undefined);
+      setInitSchema(undefined);
       setCodeId(undefined);
       setOptions(undefined);
       setDeploySource("");
@@ -320,14 +320,14 @@ const App = () => {
     setIsLoading(false);
   };
 
-  const onQuery = async (data) => {
+  const onQuery = async (data, contract) => {
     console.log("data: ", data);
     resetMessage();
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
       const queryResult = await cosmJs.current.query(
-        contractAddr,
+        contract,
         JSON.stringify(data)
       );
       console.log("query result: ", queryResult);
@@ -371,10 +371,12 @@ const App = () => {
       return;
     }
     const getLocalStorage = window.localStorage.getItem(key) || "[]";
-    let array = JSON.parse(getLocalStorage).filter(e => e.contract !== contract)
+    let array = JSON.parse(getLocalStorage).filter(
+      (e) => e.contract !== contract
+    );
     window.localStorage.setItem(key, JSON.stringify([...array]));
     setArrayContract(array);
-  }
+  };
 
   return (
     <div className="app">
@@ -382,7 +384,88 @@ const App = () => {
         <img src={logo} className="app-logo" alt="logo" />
         <h1 className="app-title">COSMWASM IDE</h1>
       </header>
+
       <div className="app-divider" />
+      <div className="contract">
+        {!isLoading ? (
+          (arrayContract.length ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                maxWidth: 500,
+              }}
+            >
+              <span>Contract address </span>
+              <Popconfirm
+                title="delete all contact address?"
+                onConfirm={() => removeContract("")}
+                okText="Yes"
+                placement="top"
+                cancelText="No"
+              >
+                <img
+                  className="click"
+                  src={RemoveIcon}
+                  width={20}
+                  height={20}
+                  alt=""
+                />
+              </Popconfirm>
+            </div>
+          ) : (
+            <></>
+          )) ||
+          (errorMessage && (
+            <div className="contract-address">
+              <span style={{ color: "red" }}>Error message </span>
+              <p>{errorMessage}</p>
+            </div>
+          ))
+        ) : (
+          <div className="deploying">
+            <Spin indicator={antIcon} />
+            <span>{ideAction} ...</span>
+          </div>
+        )}
+        {!isLoading &&
+          arrayContract &&
+          arrayContract.map((e: any, i: Number) => {
+            return (
+              <div className="app-body">
+                <DropdownItem
+                  title={e.contract}
+                  removeContract={() => removeContract(e.contract)}
+                >
+                  <CustomSelect setInteractOption={setInteractOption} />
+                  {interactOption === "execute" && (
+                    <div>
+                      <div className="contract">
+                        <span>Contract Execute </span>
+                      </div>
+                      <GasForm gasData={gasData} setGasData={setGasData} />
+                      <CustomForm
+                        schema={e.handleFile}
+                        onSubmit={(data) => onQuery(data, e.contract)}
+                      />
+                    </div>
+                  )}
+                  {interactOption === "query" && (
+                    <div>
+                      <div className="contract">
+                        <span>Contract Query </span>
+                      </div>
+                      <CustomForm
+                        schema={e.queryFile}
+                        onSubmit={(data) => onQuery(data, e.contract)}
+                      />
+                    </div>
+                  )}
+                </DropdownItem>
+              </div>
+            );
+          })}
+      </div>
       {isBuilt && (
         <div>
           <div className="app-body">
@@ -457,66 +540,6 @@ const App = () => {
           <span>{ideAction} ...</span>
         </div>
       )} */}
-      <div className="contract">
-        {!isLoading ? (
-          (arrayContract?.length ? <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: 500 }}>
-            <span>Contract address </span>
-            <Popconfirm
-              title="delete all contact address?"
-              onConfirm={() => removeContract("")}
-              okText="Yes"
-              placement="top"
-              cancelText="No"
-            >
-              <img className="click" src={RemoveIcon} width={24} height={24} alt="" />
-            </Popconfirm>
-          </div> : <></>) ||
-          (errorMessage && (
-            <div className="contract-address">
-              <span style={{ color: "red" }}>Error message </span>
-              <p>{errorMessage}</p>
-            </div>
-          ))
-        ) : (
-          <div className="deploying">
-            <Spin indicator={antIcon} />
-            <span>{ideAction} ...</span>
-          </div>
-        )}
-        {arrayContract &&
-          arrayContract.map((e: any, i: Number) => {
-            return (
-              <div className="app-body">
-                <DropdownItem title={e.contract} removeContract={() => removeContract(e.contract)} >
-                  <CustomSelect setInteractOption={setInteractOption} />
-                  {interactOption === "execute" && (
-                    <div>
-                      <div className="contract">
-                        <span>Contract Execute </span>
-                      </div>
-                      <GasForm gasData={gasData} setGasData={setGasData} />
-                      <CustomForm
-                        schema={e.handleFile}
-                        onSubmit={(data) => onQuery(data)}
-                      />
-                    </div>
-                  )}
-                  {interactOption === "query" && (
-                    <div>
-                      <div className="contract">
-                        <span>Contract Query </span>
-                      </div>
-                      <CustomForm
-                        schema={e.queryFile}
-                        onSubmit={(data) => onQuery(data)}
-                      />
-                    </div>
-                  )}
-                </DropdownItem>
-              </div>
-            );
-          })}
-      </div>
 
       {/* {isDeployed && (
         <div className="app-body">
