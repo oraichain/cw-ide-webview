@@ -96,12 +96,12 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
 
   return (
     <div className="app-body">
-      <div className="intro">
+      {/* <div className="intro">
         Start the Wasm smart contract development journey with CosmWasm IDE by
         building your first contract! Choose a smart contract file and click the
         button 'Build CosmWasm' to build your contract. You can also interact
         with an existing smart contract.
-      </div>
+      </div> */}
       <CustomNetwork updateChain={updateChain} />
       <div className="wrap-form">
         <CustomInput
