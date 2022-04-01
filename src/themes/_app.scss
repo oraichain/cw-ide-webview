@@ -16,12 +16,10 @@
     .app-title {
       font-size: 1.8rem;
       font-family: "Bebas";
-      background: -webkit-linear-gradient(
-        45deg,
-        #f5cca3 0%,
-        #fd8ab6 50.52%,
-        #9a5beb 100%
-      );
+      background: -webkit-linear-gradient(45deg,
+          #f5cca3 0%,
+          #fd8ab6 50.52%,
+          #9a5beb 100%);
       background-clip: text;
       margin: 0 0 0 12px;
       -webkit-background-clip: text;
@@ -31,12 +29,10 @@
 
   .app-divider {
     height: 1px;
-    background: linear-gradient(
-      45deg,
-      #f5cca3 0%,
-      #fd8ab6 50.52%,
-      #9a5beb 100%
-    );
+    background: linear-gradient(45deg,
+        #f5cca3 0%,
+        #fd8ab6 50.52%,
+        #9a5beb 100%);
     width: 100%;
     margin: 20px 0;
     opacity: 0.2;
@@ -45,6 +41,7 @@
   .app-body {
     .chain-select {
       margin-top: 20px;
+
       h3 {
         text-transform: uppercase;
         font-family: "Bebas";
@@ -295,6 +292,7 @@
 
 .click {
   cursor: pointer;
+  word-break: break-all;
 }
 
 .deploying {

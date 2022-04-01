@@ -259,7 +259,7 @@ const App = () => {
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
       let address = await cosmJs.current.handleInstantiate({
         mnemonic,
-        codeId: parseInt("123"),
+        codeId: codeId,
         initInput: initSchemaData,
         label,
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
@@ -407,7 +407,6 @@ const App = () => {
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                maxWidth: 500,
               }}
             >
               <span>Contract address </span>
@@ -466,6 +465,17 @@ const App = () => {
                       <CustomForm
                         schema={e.queryFile}
                         onSubmit={(data) => onQuery(data, e.contract)}
+                      />
+                    </div>
+                  )}
+                  {!_.isEmpty(resultJson) && (
+                    <div style={{ marginTop: "10px" }}>
+                      <ReactJson
+                        collapseStringsAfterLength={20}
+                        name={false}
+                        displayObjectSize={false}
+                        src={resultJson}
+                        theme={"ocean"}
                       />
                     </div>
                   )}
