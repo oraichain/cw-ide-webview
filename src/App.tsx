@@ -56,6 +56,7 @@ const App = () => {
   const [codeId, setCodeId] = useState(undefined);
   const [ideAction, setIdeAction] = useState("");
   const [arrayContract, setArrayContract] = useState([]);
+  const [chainName, setChainName] = useState("Oraichain Testnet");
 
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: any) => {
@@ -112,33 +113,44 @@ const App = () => {
   });
 
   useEffect(() => {
-    const key = "contract-infos";
-    const getLocalStorage: any = window.localStorage.getItem(key);
-    let array: any = [];
-    if (getLocalStorage) {
-      array = [...JSON.parse(getLocalStorage)];
-    }
-    setArrayContract(array);
+    getFilterLocalstorage();
   }, []);
 
-  const setLocalstorage = async (
+  useEffect(() => {
+    getFilterLocalstorage();
+  }, [chainName]);
+
+  const getFilterLocalstorage = () => {
+    const key = "contract-infos";
+    const getLocalStorage = window.localStorage.getItem(key);
+    let array: any = [];
+    if (getLocalStorage) {
+      array = [...JSON.parse(getLocalStorage)].filter(
+        (e) => e.chainName === chainName
+      );
+      setArrayContract(array);
+    }
+  };
+
+  const setLocalstorage = (
     contract: String,
     handleFile: any,
     queryFile: any,
     action: String
   ) => {
-    const key = "contract-infos";
+    const key: string = "contract-infos";
     const getLocalStorage = window.localStorage.getItem(key);
     const contractArrayInfo = {
       contract,
       handleFile,
       queryFile,
       action,
+      chainName,
     };
     let array: any = [];
     if (getLocalStorage) {
       let CheckDuplicateContract = JSON.parse(getLocalStorage).find(
-        (e) => e.contract === contract
+        (e) => e.contract === contract && e.chainName === chainName
       );
       array = CheckDuplicateContract
         ? [...JSON.parse(getLocalStorage)]
@@ -148,11 +160,13 @@ const App = () => {
       array = [contractArrayInfo];
       window.localStorage.setItem(key, JSON.stringify([...array]));
     }
+    array = array && array.filter((e) => e.chainName === chainName);
     setArrayContract(array);
   };
 
   const updateChain = (value) => {
     console.log("current chain store: ", window.chainStore.current);
+    setChainName(value);
     setGasData({
       ...gasData,
       gasPrice: window.chainStore.current.gasPriceStep?.average
@@ -338,7 +352,7 @@ const App = () => {
     setIsInteractionLoading(false);
   };
 
-  const onHandle = async (data) => {
+  const onHandle = async (data, contract) => {
     console.log("data: ", data);
     resetMessage();
     setIsInteractionLoading(true);
@@ -346,7 +360,7 @@ const App = () => {
     try {
       const queryResult = await cosmJs.current.execute({
         mnemonic,
-        address: contractAddr,
+        address: contract,
         handleMsg: JSON.stringify(data),
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
       });
@@ -388,7 +402,7 @@ const App = () => {
       <div className="app-divider" />
       <div className="contract">
         {!isLoading ? (
-          (arrayContract.length ? (
+          arrayContract.length ? (
             <div
               style={{
                 display: "flex",
@@ -415,13 +429,7 @@ const App = () => {
             </div>
           ) : (
             <></>
-          )) ||
-          (errorMessage && (
-            <div className="contract-address">
-              <span style={{ color: "red" }}>Error message </span>
-              <p>{errorMessage}</p>
-            </div>
-          ))
+          )
         ) : (
           <div className="deploying">
             <Spin indicator={antIcon} />
@@ -446,7 +454,7 @@ const App = () => {
                       <GasForm gasData={gasData} setGasData={setGasData} />
                       <CustomForm
                         schema={e.handleFile}
-                        onSubmit={(data) => onQuery(data, e.contract)}
+                        onSubmit={(data) => onHandle(data, e.contract)}
                       />
                     </div>
                   )}
@@ -466,6 +474,30 @@ const App = () => {
             );
           })}
       </div>
+      {!isInteractionLoading ? (
+                  errorMessage && (
+                    <div className="contract-address">
+                      <span style={{ color: "red" }}>Error message </span>
+                      <p>{errorMessage}</p>
+                    </div>
+                  )
+                ) : (
+                  <div className="deploying">
+                    <Spin indicator={antIcon} />
+                    <span>Invoking ...</span>
+                  </div>
+                )}
+                {!_.isEmpty(resultJson) && (
+                  <div style={{ marginTop: "10px" }}>
+                    <ReactJson
+                      collapseStringsAfterLength={20}
+                      name={false}
+                      displayObjectSize={false}
+                      src={resultJson}
+                      theme={"ocean"}
+                    />
+                  </div>
+                )}
       {isBuilt && (
         <div>
           <div className="app-body">
