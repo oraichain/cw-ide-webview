@@ -9,7 +9,7 @@ import { MyDropZone } from "..";
 const { Option } = Select;
 
 const CustomNetwork = ({ updateChain }) => {
-  const DEFAULT_CHAINMAME = window.chainStore.current.chainName;
+  const [defaultChainName, setDefaultChainName] = useState(window.chainStore.current.chainName);
   const [chainInfos, setChainInfos] = useState(window.chainStore.chainInfos);
   const [jsonFile, setJsonFile] = useState({});
   const [jsonFileName, setJsonFileName] = useState("");
@@ -42,9 +42,18 @@ const CustomNetwork = ({ updateChain }) => {
     try {
       setErrorMessage("");
       if (jsonFile.chainId) {
+        // check if current chain id is the removed one. if yes => reset current chain id to the first chain id in list
+        const currentChainId = window.chainStore.current.chainId;
+        if (currentChainId === jsonFile.chainId) {
+          let chainName = window.chainStore.chainInfos[0].chainName;
+          window.chainStore.setChain(chainName);
+          updateChain(chainName);
+          window.location.reload();
+        }
         window.chainStore.removeChain(jsonFile.chainId);
         // set chain to auto trigger new chain store
         setChainInfos(window.chainStore.chainInfos);
+        window.chainStore.setChain(window.chainStore.current.chainName);
         setUpdateMessage("Successfully removed the provided chain");
       } else throw "invalid chain data";
     } catch (error) {
@@ -67,7 +76,7 @@ const CustomNetwork = ({ updateChain }) => {
         <h3> Select chain name</h3>
       </div>
       <Select
-        defaultValue={DEFAULT_CHAINMAME}
+        defaultValue={defaultChainName}
         style={{ width: 240 }}
         suffixIcon={<IconSelect />}
         onSelect={(value) => {
