@@ -165,7 +165,6 @@ const App = () => {
   };
 
   const updateChain = (value) => {
-    console.log("current chain store: ", window.chainStore.current);
     setChainName(value);
     setGasData({
       ...gasData,
@@ -485,29 +484,29 @@ const App = () => {
           })}
       </div>
       {!isInteractionLoading ? (
-                  errorMessage && (
-                    <div className="contract-address">
-                      <span style={{ color: "red" }}>Error message </span>
-                      <p>{errorMessage}</p>
-                    </div>
-                  )
-                ) : (
-                  <div className="deploying">
-                    <Spin indicator={antIcon} />
-                    <span>Invoking ...</span>
-                  </div>
-                )}
-                {!_.isEmpty(resultJson) && (
-                  <div style={{ marginTop: "10px" }}>
-                    <ReactJson
-                      collapseStringsAfterLength={20}
-                      name={false}
-                      displayObjectSize={false}
-                      src={resultJson}
-                      theme={"ocean"}
-                    />
-                  </div>
-                )}
+        errorMessage && (
+          <div className="contract-address">
+            <span style={{ color: "red" }}>Error message </span>
+            <p>{errorMessage}</p>
+          </div>
+        )
+      ) : (
+        <div className="deploying">
+          <Spin indicator={antIcon} />
+          <span>Invoking ...</span>
+        </div>
+      )}
+      {!_.isEmpty(resultJson) && (
+        <div style={{ marginTop: "10px" }}>
+          <ReactJson
+            collapseStringsAfterLength={20}
+            name={false}
+            displayObjectSize={false}
+            src={resultJson}
+            theme={"ocean"}
+          />
+        </div>
+      )}
       {isBuilt && (
         <div>
           <div className="app-body">
