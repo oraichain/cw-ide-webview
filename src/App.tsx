@@ -46,7 +46,14 @@ const App = () => {
   const [initSchema, setInitSchema] = useState(undefined);
   const [querySchema, setQuerySchema] = useState({});
   const [handleSchema, setHandleSchema] = useState({});
-  const [resultJson, setResultJson] = useState({});
+  // const [resultJson, setResultJson] = useState({});
+  const [resultJson, setResultJson] = useState<
+    Array<{
+      contract: string;
+      data: any;
+    }>
+  >([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isInteractionLoading, setIsInteractionLoading] = useState(false);
   const [deploySource, setDeploySource] = useState("");
@@ -333,7 +340,7 @@ const App = () => {
     setIsLoading(false);
   };
 
-  const onQuery = async (data, contract) => {
+  const onQuery = async (data: any, contract: string) => {
     console.log("data: ", data);
     resetMessage();
     setIsInteractionLoading(true);
@@ -344,14 +351,14 @@ const App = () => {
         JSON.stringify(data)
       );
       console.log("query result: ", queryResult);
-      setResultJson({ data: queryResult });
+      setResultJson([{ contract, data: queryResult }, ...resultJson]);
     } catch (error) {
       setErrorMessage(String(error));
     }
     setIsInteractionLoading(false);
   };
 
-  const onHandle = async (data, contract) => {
+  const onHandle = async (data: any, contract: string) => {
     console.log("data: ", data);
     resetMessage();
     setIsInteractionLoading(true);
@@ -364,7 +371,7 @@ const App = () => {
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
       });
       console.log("query result: ", queryResult);
-      setResultJson({ data: queryResult });
+      setResultJson([{ contract, data: queryResult }, ...resultJson]);
     } catch (error) {
       setErrorMessage(String(error));
     }
@@ -373,7 +380,7 @@ const App = () => {
 
   const resetMessage = () => {
     setErrorMessage("");
-    setResultJson({});
+    setResultJson([]);
   };
 
   const removeContract = (contract: String) => {
@@ -437,6 +444,11 @@ const App = () => {
         {!isLoading &&
           arrayContract &&
           arrayContract.map((e: any, i: Number) => {
+            let resjson = resultJson.find(
+              (res) => res.contract === e.contract
+            );
+            let src =
+            resjson && resjson.data ? { data: resjson.data } : {};
             return (
               <div className="app-body">
                 <DropdownItem
@@ -467,13 +479,13 @@ const App = () => {
                       />
                     </div>
                   )}
-                  {!_.isEmpty(resultJson) && (
+                  {!_.isEmpty(src) && (
                     <div style={{ marginTop: "10px" }}>
                       <ReactJson
                         collapseStringsAfterLength={20}
                         name={false}
                         displayObjectSize={false}
-                        src={resultJson}
+                        src={src}
                         theme={"ocean"}
                       />
                     </div>
@@ -496,7 +508,7 @@ const App = () => {
           <span>Invoking ...</span>
         </div>
       )}
-      {!_.isEmpty(resultJson) && (
+      {/* {!_.isEmpty(resultJson) && (
         <div style={{ marginTop: "10px" }}>
           <ReactJson
             collapseStringsAfterLength={20}
@@ -506,7 +518,7 @@ const App = () => {
             theme={"ocean"}
           />
         </div>
-      )}
+      )} */}
       {isBuilt && (
         <div>
           <div className="app-body">
