@@ -7,7 +7,7 @@ import { decode } from "base64-arraybuffer";
 import { Coin } from "@cosmjs/cosmwasm-stargate/build/codec/cosmos/base/v1beta1/coin";
 import CosmJsAbstract, { HandleOptions } from "./cosmjs-abstract";
 import { InstantiateOptions } from "@cosmjs/cosmwasm-launchpad";
-import Cosmos from "@oraichain/cosmosjs";
+import OraiwasmJs from "@oraichain/oraiwasm-js";
 
 class CosmJs extends CosmJsAbstract {
   /**
@@ -214,29 +214,6 @@ class CosmJs extends CosmJsAbstract {
     }
   }
 
-  /**
-   * A wrapper method to execute a smart contract
-   * @param args - an object containing essential parameters to execute contract
-   * @returns - transaction hash after executing the contract
-   */
-   getHandleMessage = (contract, msg, sender, amount) => {
-    const sent_funds = null;
-    const message = Cosmos.message;
-    const msgSend = new message.cosmwasm.wasm.v1beta1.MsgExecuteContract({
-      contract,
-      msg,
-      sender,
-      sent_funds
-    });
-  
-    const msgSendAny = new message.google.protobuf.Any({
-      type_url: '/cosmwasm.wasm.v1beta1.MsgExecuteContract',
-      value: message.cosmwasm.wasm.v1beta1.MsgExecuteContract.encode(msgSend).finish()
-    });
-  
-    return msgSendAny
-  };
-
   async execute(args: {
     mnemonic?: string;
     address: string;
@@ -258,37 +235,22 @@ class CosmJs extends CosmJsAbstract {
       // if keplr, we will try to suggest chain & enable it
       if (await window.Keplr.getKeplr()) await window.Keplr.suggestChain();
       const wallet = await this.collectWallet(mnemonic);
-      const [firstAccount] = await wallet.getAccounts();
 
-      const cosmos = new Cosmos(
+      const cosmos = new OraiwasmJs(
         "https://testnet-lcd.orai.io",
         "Oraichain-testnet"
       );
 
       cosmos.setBech32MainPrefix("orai");
-      const message = Cosmos.message;
-      const msg = this.getHandleMessage(address, Buffer.from(handleMsg), firstAccount.address, 0);
-      console.log({ msg});
-      
-      const result = await cosmos.submitExtension(
-        wallet,
-        firstAccount.address,
-        firstAccount.pubkey,
-        {
-          messages: [msg],
-          gas: gasAmount?.amount,
-          fees: 500,
-          memo: handleOptions?.memo,
-          mode: "BROADCAST_MODE_SYNC",
-        }
-      );
+      const result = await cosmos.execute({ signerOrChild: wallet, rawInputs: [{ contractAddr: address, message: Buffer.from(handleMsg) }], broadcastMode: 'BROADCAST_MODE_BLOCK', gasLimits: 'auto' });
+      console.log("result: ", result)
 
       //'BROADCAST_MODE_UNSPECIFIED' | 'BROADCAST_MODE_BLOCK' | 'BROADCAST_MODE_SYNC' | 'BROADCAST_MODE_ASYNC';
 
       // const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasAmount ? GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`) : undefined, prefix: current.bech32Config.bech32PrefixAccAddr, gasLimits });
       // const input = JSON.parse(handleMsg);
       // const result = await client.execute(firstAccount.address, address, input, handleOptions?.memo, handleOptions?.funds);
-      // return result.transactionHash;
+      return result.tx_response.txhash;
     } catch (error) {
       console.log("error in executing contract: ", error);
       throw error;

@@ -23,7 +23,6 @@
   "devDependencies": {
     "@cosmjs/launchpad": "^0.26.2",
     "@cosmjs/proto-signing": "^0.26.5",
-    "@oraichain/cosmosjs": "file:./../cosmosjs",
     "@types/mocha": "^9.0.0",
     "@types/node": "^12.12.0",
     "@types/react": "^17.0.19",
@@ -49,7 +48,7 @@
     "@keplr-wallet/cosmos": "^0.9.6",
     "@keplr-wallet/stores": "^0.9.6",
     "@keplr-wallet/types": "^0.9.6",
-    "@oraichain/cosmosjs": "file:./../cosmosjs",
+    "@oraichain/oraiwasm-js": "0.0.7",
     "@rjsf/antd": "^3.2.1",
     "@rjsf/core": "^3.2.1",
     "@types/lodash": "^4.14.177",
