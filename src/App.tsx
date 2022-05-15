@@ -265,7 +265,7 @@ const App = () => {
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
       let address = await cosmJs.current.handleInstantiate({
         mnemonic,
-        codeId: parseInt(codeId),
+        codeId: codeId,
         initInput: initSchemaData,
         label,
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
