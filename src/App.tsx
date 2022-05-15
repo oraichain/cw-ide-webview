@@ -448,7 +448,7 @@ const App = () => {
               (res) => res.contract === e.contract
             );
             let src =
-            resjson && resjson.data ? { data: resjson.data } : {};
+              resjson && resjson.data ? { data: resjson.data } : {};
             return (
               <div className="app-body">
                 <DropdownItem
@@ -461,7 +461,14 @@ const App = () => {
                       <div className="contract">
                         <span>Contract Execute </span>
                       </div>
-                      <GasForm gasData={gasData} setGasData={setGasData} />
+                      <GasForm gasData={gasData} setGasData={setGasData} >
+                        <CustomInput
+                          inputHeader="Wallet mnemonic (optional)"
+                          input={mnemonic}
+                          setInput={setMnemonic}
+                          placeholder="eg. foo bar"
+                        />
+                      </GasForm>
                       <CustomForm
                         schema={e.handleFile}
                         onSubmit={(data) => onHandle(data, e.contract)}
@@ -532,7 +539,7 @@ const App = () => {
                 input={label}
                 setInput={setLabel}
               />
-              <GasForm gasData={gasData} setGasData={setGasData} />
+              <GasForm gasData={gasData} setGasData={setGasData} >{ }</GasForm>
               <CustomInput
                 inputHeader="Code Id"
                 input={codeId}
@@ -651,7 +658,7 @@ const App = () => {
       )} */}
       {!isBuilt && !isDeployed && !isLoading && !isUploaded && !errorMessage && (
         <AdvancedInteraction updateChain={updateChain} gasData={gasData}>
-          <GasForm gasData={gasData} setGasData={setGasData} />
+          <GasForm gasData={gasData} setGasData={setGasData} >{ }</GasForm>
         </AdvancedInteraction>
       )}
     </div>
