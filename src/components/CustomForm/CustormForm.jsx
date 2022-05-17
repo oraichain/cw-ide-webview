@@ -43,8 +43,12 @@ const CustomForm = ({ schema, onSubmit }) => {
       widgets={widgets}
       schema={schema}
       onSubmit={({ formData, schema }) => {
-        const schemaItem = (schema.oneOf || schema.anyOf)[selection.current];
-        const schemaKey = schemaItem.required[0];
+        console.log(formData,"FORM Data!!!!!!");
+        console.log(schema,"Schema Data!!!!!!")
+
+        const schemaItem = (schema.oneOf || schema.anyOf || schema)[selection.current];
+        console.log(schemaItem,"Schema ITEM Data!!!!!!")
+        const schemaKey = schemaItem?.required?.[0];
         // in the case that the form data still returns correct form data => update schema
         if (formData[schemaKey]) {
           schemaObj.current = { [schemaKey]: formData[schemaKey] };

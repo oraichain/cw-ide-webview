@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import Form from "@rjsf/core";
 import "../../themes/style.scss";
 import { Button, Spin } from "antd";
+import Form from "@rjsf/antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import _ from "lodash";
 import ReactJson from "react-json-view";
@@ -15,7 +16,7 @@ import {
   CustomSelect,
   CustomNetwork,
 } from "src/components";
-import { parseGasLimits } from "src/lib/utils";
+import { parseGasLimits, processSchema } from "src/lib/utils";
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -38,8 +39,13 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
   const [isInteractionLoading, setIsInteractionLoading] = useState(false);
   const [queryMessage, setQueryMessage] = useState("");
   const [executeMessage, setExecuteMessage] = useState("");
+  const [migrateMessage, setMigrateMessage] = useState("");
   const [querySchema, setQuerySchema] = useState({});
   const [handleSchema, setHandleSchema] = useState({});
+  const [migrateSchema, setMigrateSchema] = useState({});
+  const [migrateSchemaData, setMigrateSchemaData] = useState(null);
+  const [codeId, setCodeId] = useState("");
+  const [migrateContractAddr, setMigrateContractAddr] = useState("");
   const handleOptionsRef = useRef(null);
 
   // const updateChain = (value) => {
@@ -214,6 +220,61 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
                 <Button
                   onClick={() => {
                     setQuerySchema({});
+                  }}
+                >
+                  Remove schema form
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {interactOption === "migrate" && (
+        <div>
+          <div className="contract-address">
+            <span>Contract Migrate </span>
+          </div>
+          <div className="wrap-form">
+            {/* <CustomInput
+              inputHeader="Gas denom"
+              input={gasDenom}
+              setInput={setGasDenom}
+              placeholder="eg. orai"
+            /> */}
+            {_.isEmpty(migrateSchema) && (
+              <div style={{ marginBottom: "24px" }}>
+                <CustomInput
+                  inputHeader="Query message"
+                  input={migrateMessage}
+                  setInput={setMigrateMessage}
+                  placeholder="eg. {}"
+                />
+                <Button
+                  onClick={() => {
+                    // onMigrate();
+                  }}
+                  className="primary-button"
+                >
+                  Migrate
+                </Button>
+                <div style={{ cursor: "pointer", fontFamily: "Courier" }}>
+                  <MyDropZone
+                    setSchema={setMigrateSchema}
+                    setJson={null}
+                    dropZoneText={"Upload the schema file"}
+                  />
+                </div>
+              </div>
+            )}
+            {!_.isEmpty(migrateSchema) && (
+              <div style={{ marginBottom: "10px" }}>
+                <CustomForm
+                  schema={migrateSchema}
+                  onSubmit={(data) => onQuery(data)}
+                />
+                <Button
+                  onClick={() => {
+                    setMigrateSchema({});
                   }}
                 >
                   Remove schema form

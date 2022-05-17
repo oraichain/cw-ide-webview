@@ -137,6 +137,29 @@ class CosmJsLatest extends CosmJsAbstract {
             throw error;
         }
     }
+
+    /**
+     * A wrapper method to migrate a smart contract
+     * @param args - an object containing essential parameters to execute contract
+     * @returns - transaction hash after executing the contract
+     */
+    async migrate(args: { mnemonic: string, address: string, codeId: number, handleMsg: string, handleOptions?: HandleOptions, gasAmount?: { amount: string, denom: string } }) {
+        try {
+            const { mnemonic, address, handleMsg, handleOptions, gasAmount, codeId } = args;
+            const { current } = window.chainStore;
+            // if keplr, we will try to suggest chain & enable it
+            if (await window.Keplr.getKeplr()) await window.Keplr.suggestChain();
+            const wallet = await this.collectWallet(mnemonic);
+            const [firstAccount] = await wallet.getAccounts();
+            const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(current.rpc, wallet, { gasPrice: gasAmount ? GasPrice.fromString(`${gasAmount.amount}${gasAmount.denom}`) : undefined, prefix: current.bech32Config.bech32PrefixAccAddr });
+            const input = JSON.parse(handleMsg);
+            const result = await client.migrate(firstAccount.address, address, codeId, input, 'auto', handleOptions?.memo);
+            return result.transactionHash;
+        } catch (error) {
+            console.log("error in executing contract: ", error);
+            throw error;
+        }
+    }
 };
 
 export default CosmJsLatest;

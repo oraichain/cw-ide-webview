@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import logo from "./logo.png";
 // import Form from "@rjsf/core";
 import Form from "@rjsf/antd";
+import "antd/dist/antd.css";
 import "./themes/style.scss";
-import { Button, Spin, Popconfirm } from "antd";
+import { Button, Spin, Popconfirm, Tabs } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import _ from "lodash";
+import _, { isNil } from "lodash";
 import {
   CustomForm,
   CustomInput,
@@ -21,6 +22,9 @@ import { AdvancedInteraction } from "./pages";
 import { parseGasLimits, processSchema } from "./lib/utils";
 import DropdownItem from "./components/Collapse";
 import RemoveIcon from "./remove.png";
+import "./App.css";
+
+const { TabPane } = Tabs;
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -44,6 +48,9 @@ const App = () => {
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [initSchema, setInitSchema] = useState(undefined);
+  const [migrateSchema, setMigrateSchema] = useState(undefined);
+  const [migrateSchemaData, setMigrateSchemaData] = useState("");
+  const [migrateContractAddr, setMigrateContractAddr] = useState("");
   const [querySchema, setQuerySchema] = useState({});
   const [handleSchema, setHandleSchema] = useState({});
   // const [resultJson, setResultJson] = useState({});
@@ -73,8 +80,11 @@ const App = () => {
       setMnemonic(message.mnemonic);
     }
     // if message payload is build => post message back to extension to collect schema file
+
     if (message.action === "build") {
+      console.log(message, "MSG MIGRATESCHEMA");
       setInitSchema(processSchema(JSON.parse(message.schemaFile)));
+      setMigrateSchema(processSchema(JSON.parse(message.migrateSchemaFile)));
       setHandleSchema({});
       setQuerySchema({});
       setIsBuilt(true);
@@ -87,6 +97,7 @@ const App = () => {
       // console.log("query file: ", message.queryFile);
       let handleFile = processSchema(JSON.parse(message.handleFile));
       let queryFile = processSchema(JSON.parse(message.queryFile));
+      let migrateFile = processSchema(JSON.parse(message.migrateFile));
       setHandleSchema(handleFile);
       setQuerySchema(queryFile);
       onDeploy(
@@ -94,6 +105,7 @@ const App = () => {
         message.payload,
         handleFile,
         queryFile,
+        migrateFile,
         message.action
       );
     } else if (message.action === "upload") {
@@ -106,9 +118,16 @@ const App = () => {
       console.log("message instantiate: ", message);
       let handleFile = processSchema(JSON.parse(message.handleFile));
       let queryFile = processSchema(JSON.parse(message.queryFile));
+      let migrateFile = processSchema(JSON.parse(message.migrateFile));
       setHandleSchema(handleFile);
       setQuerySchema(queryFile);
-      onInstantiate(message.mnemonic, handleFile, queryFile, message.action);
+      onInstantiate(
+        message.mnemonic,
+        handleFile,
+        queryFile,
+        migrateFile,
+        message.action
+      );
     }
   };
 
@@ -143,6 +162,7 @@ const App = () => {
     contract: String,
     handleFile: any,
     queryFile: any,
+    migrateFile: any,
     action: String
   ) => {
     const key: string = "contract-infos";
@@ -151,6 +171,7 @@ const App = () => {
       contract,
       handleFile,
       queryFile,
+      migrateFile,
       action,
       chainName,
     };
@@ -185,6 +206,14 @@ const App = () => {
   const handleOnChange = _.throttle(
     ({ formData }) => {
       setInitSchemaData(formData);
+    },
+    2000,
+    { trailing: true }
+  );
+
+  const handleOnMigrateSchemaChange = _.throttle(
+    ({ formData }) => {
+      setMigrateSchemaData(formData);
     },
     2000,
     { trailing: true }
@@ -247,6 +276,7 @@ const App = () => {
     mnemonic: any,
     handleFile,
     queryFile,
+    migrateFile,
     action
   ) => {
     console.log("Instantiate data: ", initSchemaData);
@@ -273,7 +303,7 @@ const App = () => {
         gasLimits: parseGasLimits(gasData.gasLimits),
       });
       console.log("contract address: ", address);
-      setLocalstorage(address, handleFile, queryFile, action);
+      setLocalstorage(address, handleFile, queryFile, migrateFile, action);
       setContractAddr(address);
       setIsDeployed(true);
       setIsBuilt(false);
@@ -296,6 +326,7 @@ const App = () => {
     wasmBytes?: any,
     handleFile?: any,
     queryFile?: any,
+    migrateFile?: any,
     action?: any
   ) => {
     console.log("Instantiate data: ", initSchemaData);
@@ -320,7 +351,7 @@ const App = () => {
         instantiateOptions,
       });
       console.log("contract address: ", address);
-      setLocalstorage(address, handleFile, queryFile, action);
+      setLocalstorage(address, handleFile, queryFile, migrateFile, action);
       // setContractAddr(address);
       // setIsDeployed(true);
       setIsBuilt(false);
@@ -398,6 +429,29 @@ const App = () => {
     setArrayContract(array);
   };
 
+  const onMigrate = async (data: any, contract: any) => {
+    setErrorMessage("");
+    setIsInteractionLoading(true);
+    let cosmJs = new CosmJsFactory(window.chainStore.current);
+    try {
+      let migrateMsg = JSON.stringify(migrateSchemaData);
+      const migrateResult = await cosmJs.current.migrate({
+        mnemonic,
+        address: migrateContractAddr,
+        codeId: !isNil(codeId) && parseInt(codeId),
+        handleMsg: migrateMsg,
+        gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
+        gasLimits: parseGasLimits(gasData.gasLimits),
+        // handleOptions: handleOptionsRef.current,
+      });
+      console.log("migrate result: ", migrateResult);
+      // setResultJson({ data: migrateResult });
+    } catch (error) {
+      setErrorMessage(String(error));
+    }
+    setIsInteractionLoading(false);
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -444,11 +498,8 @@ const App = () => {
         {!isLoading &&
           arrayContract &&
           arrayContract.map((e: any, i: Number) => {
-            let resjson = resultJson.find(
-              (res) => res.contract === e.contract
-            );
-            let src =
-              resjson && resjson.data ? { data: resjson.data } : {};
+            let resjson = resultJson.find((res) => res.contract === e.contract);
+            let src = resjson && resjson.data ? { data: resjson.data } : {};
             return (
               <div className="app-body">
                 <DropdownItem
@@ -461,7 +512,7 @@ const App = () => {
                       <div className="contract">
                         <span>Contract Execute </span>
                       </div>
-                      <GasForm gasData={gasData} setGasData={setGasData} >
+                      <GasForm gasData={gasData} setGasData={setGasData}>
                         <CustomInput
                           inputHeader="Wallet mnemonic (optional)"
                           input={mnemonic}
@@ -484,6 +535,41 @@ const App = () => {
                         schema={e.queryFile}
                         onSubmit={(data) => onQuery(data, e.contract)}
                       />
+                    </div>
+                  )}
+                  {interactOption === "migrate" && (
+                    <div>
+                      <div
+                        style={{ marginTop: 8, marginBottom: -20 }}
+                        className="contract"
+                      >
+                        <span>Contract Migrate </span>
+                      </div>
+                      <div className="wrap-form">
+                        <CustomInput
+                          inputHeader="Code Id"
+                          input={codeId}
+                          setInput={setCodeId}
+                        />
+                        <CustomInput
+                          inputHeader="Contract Address"
+                          input={migrateContractAddr}
+                          setInput={setMigrateContractAddr}
+                        />
+                        <CustomInput
+                          inputHeader="Wallet mnemonic (optional)"
+                          input={mnemonic}
+                          setInput={setMnemonic}
+                          placeholder="eg. foo bar"
+                        />
+                        <GasForm gasData={gasData} setGasData={setGasData}>
+                          {}
+                        </GasForm>
+                        <CustomForm
+                          schema={e.migrateFile}
+                          onSubmit={(data) => onMigrate(data, e.contract)}
+                        />
+                      </div>
                     </div>
                   )}
                   {!_.isEmpty(src) && (
@@ -530,55 +616,106 @@ const App = () => {
         <div>
           <div className="app-body">
             <CustomNetwork updateChain={updateChain} />
-            <div className="wrap-form">
-              <span className="please-text">
-                Please fill out the form below to deploy the contract:
-              </span>
-              <CustomInput
-                inputHeader="input label"
-                input={label}
-                setInput={setLabel}
-              />
-              <GasForm gasData={gasData} setGasData={setGasData} >{ }</GasForm>
-              <CustomInput
-                inputHeader="Code Id"
-                input={codeId}
-                setInput={setCodeId}
-              />
-              {!isUploaded && (
-                <div>
+
+            <Tabs
+              hideAdd={true}
+              className="tabs"
+              defaultActiveKey="1"
+              onChange={() => {}}
+            >
+              <TabPane className="tab" tab="Instantiate" key="1">
+                <>
+                  <div className="wrap-form">
+                    <span className="please-text">
+                      Please fill out the form below to deploy the contract:
+                    </span>
+                    <CustomInput
+                      inputHeader="input label"
+                      input={label}
+                      setInput={setLabel}
+                    />
+                    <GasForm gasData={gasData} setGasData={setGasData}>
+                      {}
+                    </GasForm>
+                    <CustomInput
+                      inputHeader="Code Id"
+                      input={codeId}
+                      setInput={setCodeId}
+                    />
+                    {!isUploaded && (
+                      <div>
+                        <CustomInput
+                          inputHeader="Source code url"
+                          input={deploySource}
+                          setInput={setDeploySource}
+                          placeholder="eg. https://foobar.com"
+                        />
+                        <CustomInput
+                          inputHeader="Contract builder (Docker img with tag)"
+                          input={deployBuilder}
+                          setInput={setDeployBuilder}
+                          placeholder="eg. orai/orai:0.40.1"
+                        />
+                      </div>
+                    )}
+                    <div className="input-form">
+                      <Form
+                        schema={instantiateOptionsSchema}
+                        formData={instantiateOptions}
+                        onChange={handleOnInstantiateOptChange}
+                        // onSubmit={(data) => setInitSchemaData(data.formData)}
+                        children={true}
+                      />
+                    </div>
+                  </div>
+                  <Form
+                    schema={initSchema}
+                    formData={initSchemaData}
+                    onChange={handleOnChange}
+                    onSubmit={(data) => setInitSchemaData(data.formData)}
+                    children={true}
+                  />
+                </>
+              </TabPane>
+              <TabPane className="tab" tab="Migrate" key="2">
+                <div className="wrap-form">
+                  <span className="please-text">
+                    Please fill out the form below to migrate the contract:
+                  </span>
                   <CustomInput
-                    inputHeader="Source code url"
-                    input={deploySource}
-                    setInput={setDeploySource}
-                    placeholder="eg. https://foobar.com"
+                    inputHeader="Code Id"
+                    input={codeId}
+                    setInput={setCodeId}
                   />
                   <CustomInput
-                    inputHeader="Contract builder (Docker img with tag)"
-                    input={deployBuilder}
-                    setInput={setDeployBuilder}
-                    placeholder="eg. orai/orai:0.40.1"
+                    inputHeader="Contract Address"
+                    input={migrateContractAddr}
+                    setInput={setMigrateContractAddr}
                   />
+                  <GasForm gasData={gasData} setGasData={setGasData}>
+                    {}
+                  </GasForm>
+                  <Form
+                    schema={migrateSchema}
+                    formData={migrateSchemaData}
+                    onChange={handleOnMigrateSchemaChange}
+                    onSubmit={(data) => setMigrateSchemaData(data.formData)}
+                    children={true}
+                  />
+                  <div className="button-wrapper">
+                    <Button
+                      onClick={() => {
+                        onMigrate("", "");
+                      }}
+                      className="primary-button"
+                    >
+                      Migrate
+                    </Button>
+                  </div>
                 </div>
-              )}
-              <div className="input-form">
-                <Form
-                  schema={instantiateOptionsSchema}
-                  formData={instantiateOptions}
-                  onChange={handleOnInstantiateOptChange}
-                  // onSubmit={(data) => setInitSchemaData(data.formData)}
-                  children={true}
-                />
-              </div>
-            </div>
+              </TabPane>
+            </Tabs>
           </div>
-          <Form
-            schema={initSchema}
-            formData={initSchemaData}
-            onChange={handleOnChange}
-            onSubmit={(data) => setInitSchemaData(data.formData)}
-            children={true}
-          />
         </div>
       )}
       {/* {!isLoading ? (
@@ -658,7 +795,9 @@ const App = () => {
       )} */}
       {!isBuilt && !isDeployed && !isLoading && !isUploaded && !errorMessage && (
         <AdvancedInteraction updateChain={updateChain} gasData={gasData}>
-          <GasForm gasData={gasData} setGasData={setGasData} >{ }</GasForm>
+          <GasForm gasData={gasData} setGasData={setGasData}>
+            {}
+          </GasForm>
         </AdvancedInteraction>
       )}
     </div>

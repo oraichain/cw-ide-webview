@@ -1,0 +1,58 @@
+.tabs .ant-tabs-tab-active {
+  margin: 0px;
+  padding: 4px 15px;
+  background: #524a70 !important;
+  border: none;
+  color: white !important;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: "Courier";
+}
+
+.tabs .ant-tabs-tab-active div {
+  color: white !important;
+}
+
+.ant-tabs-nav-operations {
+  display: none !important;
+}
+
+.ant-tabs-nav-list {
+  width: 100%;
+}
+
+.ant-tabs-ink-bar {
+  position: absolute;
+  background: #58485a;
+  pointer-events: none;
+}
+
+.tabs .ant-tabs-tab {
+  padding: 4px 15px;
+  margin: 0px;
+  width: 50%;
+  background: transparent;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: "Courier";
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-tabs-nav::before {
+  border-bottom: 1px solid #716972 !important;
+}
+
+.tabs {
+  margin-top: 24px;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 16px;
+}

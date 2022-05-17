@@ -26,6 +26,8 @@ export default class CosmJsAbstract {
     }
     async execute(_args: { mnemonic: string, address: string, handleMsg: string, handleOptions?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
         throw new Error("Method 'execute()' must be implemented.");
+    }async migrate(_args: { mnemonic: string, address: string, codeId: any, handleMsg: string, handleOptions?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
+        throw new Error("Method 'execute()' must be implemented.");
     }
 
     collectWallet = async (mnemonic?: string) => {
