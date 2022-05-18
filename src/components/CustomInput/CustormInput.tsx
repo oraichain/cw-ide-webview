@@ -2,7 +2,7 @@ import "antd/dist/antd.css";
 import _ from "lodash";
 import { Input } from "antd";
 
-const CustomInput = ({ inputHeader, input, setInput, placeholder = "" }) => {
+const CustomInput = ({ inputHeader, input, setInput, placeholder = "", type = "text" }) => {
 
   return (
     <div className="input-form">
@@ -11,6 +11,7 @@ const CustomInput = ({ inputHeader, input, setInput, placeholder = "" }) => {
         placeholder={placeholder}
         value={input}
         onInput={(e: any) => setInput(e.target.value)}
+        type={type}
       />
     </div>
   );

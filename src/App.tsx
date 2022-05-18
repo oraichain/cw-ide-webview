@@ -295,7 +295,7 @@ const App = () => {
       // let address = await Wasm.handleDeploy({ mnemonic, wasmBody: wasmBytes ? wasmBytes : wasmBody, initInput, label, sourceCode: '' });
       let address = await cosmJs.current.handleInstantiate({
         mnemonic,
-        codeId: codeId,
+        codeId: parseInt(codeId),
         initInput: initSchemaData,
         label,
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
@@ -517,6 +517,7 @@ const App = () => {
                           input={mnemonic}
                           setInput={setMnemonic}
                           placeholder="eg. foo bar"
+                          type={"password"}
                         />
                       </GasForm>
                       <CustomForm
@@ -561,6 +562,7 @@ const App = () => {
                             input={mnemonic}
                             setInput={setMnemonic}
                             placeholder="eg. foo bar"
+                            type={"password"}
                           />
                         </GasForm>
                         <CustomForm
@@ -696,6 +698,7 @@ const App = () => {
                       input={mnemonic}
                       setInput={setMnemonic}
                       placeholder="eg. foo bar"
+                      type={"password"}
                     />
                   </GasForm>
                   <Form
@@ -804,6 +807,7 @@ const App = () => {
               input={mnemonic}
               setInput={setMnemonic}
               placeholder="eg. foo bar"
+              type={"password"}
             />
           </GasForm>
         </AdvancedInteraction>
