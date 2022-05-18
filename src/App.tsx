@@ -505,7 +505,12 @@ const App = () => {
                   title={e.contract}
                   removeContract={() => removeContract(e.contract)}
                 >
-                  <CustomSelect setInteractOption={setInteractOption} />
+                  <CustomSelect
+                    displayMigrateOption={
+                      !_.isNil(e.migrateFile) ? true : false
+                    }
+                    setInteractOption={setInteractOption}
+                  />
                   {interactOption === "execute" && (
                     <div>
                       <div className="contract">

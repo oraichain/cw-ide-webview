@@ -142,7 +142,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
         />
       </div>
 
-      <CustomSelect setInteractOption={setInteractOption} />
+      <CustomSelect displayMigrateOption={true} setInteractOption={setInteractOption} />
 
       {interactOption === "execute" && (
         <div>
