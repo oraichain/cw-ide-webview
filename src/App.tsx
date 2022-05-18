@@ -434,12 +434,11 @@ const App = () => {
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
-      let migrateMsg = JSON.stringify(migrateSchemaData);
       const migrateResult = await cosmJs.current.migrate({
         mnemonic,
-        address: migrateContractAddr,
+        address: migrateContractAddr || contract,
         codeId: !isNil(codeId) && parseInt(codeId),
-        handleMsg: migrateMsg,
+        handleMsg: JSON.stringify(data),
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: parseGasLimits(gasData.gasLimits),
         // handleOptions: handleOptionsRef.current,
@@ -556,14 +555,13 @@ const App = () => {
                           input={migrateContractAddr}
                           setInput={setMigrateContractAddr}
                         />
-                        <CustomInput
-                          inputHeader="Wallet mnemonic (optional)"
-                          input={mnemonic}
-                          setInput={setMnemonic}
-                          placeholder="eg. foo bar"
-                        />
                         <GasForm gasData={gasData} setGasData={setGasData}>
-                          {}
+                          <CustomInput
+                            inputHeader="Wallet mnemonic (optional)"
+                            input={mnemonic}
+                            setInput={setMnemonic}
+                            placeholder="eg. foo bar"
+                          />
                         </GasForm>
                         <CustomForm
                           schema={e.migrateFile}
@@ -693,7 +691,12 @@ const App = () => {
                     setInput={setMigrateContractAddr}
                   />
                   <GasForm gasData={gasData} setGasData={setGasData}>
-                    {}
+                    <CustomInput
+                      inputHeader="Wallet mnemonic (optional)"
+                      input={mnemonic}
+                      setInput={setMnemonic}
+                      placeholder="eg. foo bar"
+                    />
                   </GasForm>
                   <Form
                     schema={migrateSchema}
@@ -705,7 +708,7 @@ const App = () => {
                   <div className="button-wrapper">
                     <Button
                       onClick={() => {
-                        onMigrate("", "");
+                        onMigrate(migrateSchemaData, migrateContractAddr);
                       }}
                       className="primary-button"
                     >
@@ -796,7 +799,12 @@ const App = () => {
       {!isBuilt && !isDeployed && !isLoading && !isUploaded && !errorMessage && (
         <AdvancedInteraction updateChain={updateChain} gasData={gasData}>
           <GasForm gasData={gasData} setGasData={setGasData}>
-            {}
+            <CustomInput
+              inputHeader="Wallet mnemonic (optional)"
+              input={mnemonic}
+              setInput={setMnemonic}
+              placeholder="eg. foo bar"
+            />
           </GasForm>
         </AdvancedInteraction>
       )}

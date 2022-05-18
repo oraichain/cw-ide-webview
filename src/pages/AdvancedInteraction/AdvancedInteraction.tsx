@@ -17,6 +17,7 @@ import {
   CustomNetwork,
 } from "src/components";
 import { parseGasLimits, processSchema } from "src/lib/utils";
+import "./AdvancedInteraction.css";
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
@@ -43,7 +44,6 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
   const [querySchema, setQuerySchema] = useState({});
   const [handleSchema, setHandleSchema] = useState({});
   const [migrateSchema, setMigrateSchema] = useState({});
-  const [migrateSchemaData, setMigrateSchemaData] = useState(null);
   const [codeId, setCodeId] = useState("");
   const [migrateContractAddr, setMigrateContractAddr] = useState("");
   const handleOptionsRef = useRef(null);
@@ -100,6 +100,30 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
     setIsInteractionLoading(false);
   };
 
+  const onMigrate = async (schemaUploaded) => {
+    setErrorMessage("");
+    setIsInteractionLoading(true);
+    let cosmJs = new CosmJsFactory(window.chainStore.current);
+    try {
+      let finalMessage = migrateMessage;
+      if (schemaUploaded) finalMessage = JSON.stringify(schemaUploaded);
+      const migrateResult = await cosmJs.current.migrate({
+        mnemonic,
+        address: migrateContractAddr,
+        codeId: !_.isNil(codeId) && parseInt(codeId),
+        handleMsg: finalMessage,
+        gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
+        gasLimits: parseGasLimits(gasData.gasLimits),
+        // handleOptions: handleOptionsRef.current,
+      });
+      console.log("Migrate result: ", migrateResult);
+      setResultJson({ data: migrateResult });
+    } catch (error) {
+      setErrorMessage(String(error));
+    }
+    setIsInteractionLoading(false);
+  };
+
   return (
     <div className="app-body">
       {/* <div className="intro">
@@ -115,12 +139,6 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
           input={contractAddr}
           setInput={setContractAddr}
           placeholder="eg. orai1ars73g86y4kzajsgam5ee38npgmkq54dlzuz6w"
-        />
-        <CustomInput
-          inputHeader="Wallet mnemonic (optional)"
-          input={mnemonic}
-          setInput={setMnemonic}
-          placeholder="eg. foo bar"
         />
       </div>
 
@@ -146,6 +164,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
                   onClick={() => {
                     onHandle(null);
                   }}
+                  className="primary-button"
                 >
                   Execute
                 </Button>
@@ -168,6 +187,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
                   onClick={() => {
                     setHandleSchema({});
                   }}
+                  className="remove-button"
                 >
                   Remove schema form
                 </Button>
@@ -221,6 +241,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
                   onClick={() => {
                     setQuerySchema({});
                   }}
+                  className="remove-button"
                 >
                   Remove schema form
                 </Button>
@@ -235,23 +256,29 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
             <span>Contract Migrate </span>
           </div>
           <div className="wrap-form">
-            {/* <CustomInput
-              inputHeader="Gas denom"
-              input={gasDenom}
-              setInput={setGasDenom}
-              placeholder="eg. orai"
-            /> */}
+            <CustomInput
+              inputHeader="Contract Address"
+              input={migrateContractAddr}
+              setInput={setMigrateContractAddr}
+            />
+            <CustomInput
+              inputHeader="Code Id"
+              input={codeId}
+              setInput={setCodeId}
+            />
+            {children}
+
             {_.isEmpty(migrateSchema) && (
-              <div style={{ marginBottom: "24px" }}>
+              <div style={{ marginBottom: "24px", marginTop: 14 }}>
                 <CustomInput
-                  inputHeader="Query message"
+                  inputHeader="Migrate message"
                   input={migrateMessage}
                   setInput={setMigrateMessage}
                   placeholder="eg. {}"
                 />
                 <Button
                   onClick={() => {
-                    // onMigrate();
+                    onMigrate(null);
                   }}
                   className="primary-button"
                 >
@@ -267,15 +294,16 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
               </div>
             )}
             {!_.isEmpty(migrateSchema) && (
-              <div style={{ marginBottom: "10px" }}>
+              <div style={{ marginBottom: "10px", marginTop: 14 }}>
                 <CustomForm
                   schema={migrateSchema}
-                  onSubmit={(data) => onQuery(data)}
+                  onSubmit={(data) => onMigrate(data)}
                 />
                 <Button
                   onClick={() => {
                     setMigrateSchema({});
                   }}
+                  className="remove-button"
                 >
                   Remove schema form
                 </Button>

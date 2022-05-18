@@ -7,25 +7,25 @@ const { Option } = Select;
 
 const CustomSelect =
   (selectionRef, schemaObj) =>
-    ({ options: { enumOptions }, value, onChange, ...props }) => {
-      return (
-        <Select
-          {...props}
-          onChange={(value) => {
-            selectionRef.current = +value;
-            schemaObj.current = {};
-            onChange(+value);
-          }}
-          value={value}
-        >
-          {enumOptions.map((opt) => (
-            <Option key={opt.value} value={opt.value}>
-              {opt.label}
-            </Option>
-          ))}
-        </Select>
-      );
-    };
+  ({ options: { enumOptions }, value, onChange, ...props }) => {
+    return (
+      <Select
+        {...props}
+        onChange={(value) => {
+          selectionRef.current = +value;
+          schemaObj.current = {};
+          onChange(+value);
+        }}
+        value={value}
+      >
+        {enumOptions.map((opt) => (
+          <Option key={opt.value} value={opt.value}>
+            {opt.label}
+          </Option>
+        ))}
+      </Select>
+    );
+  };
 
 const CustomForm = ({ schema, onSubmit }) => {
   const selection = useRef(0);
@@ -43,12 +43,10 @@ const CustomForm = ({ schema, onSubmit }) => {
       widgets={widgets}
       schema={schema}
       onSubmit={({ formData, schema }) => {
-        console.log(formData,"FORM Data!!!!!!");
-        console.log(schema,"Schema Data!!!!!!")
-
-        const schemaItem = (schema.oneOf || schema.anyOf || schema)[selection.current];
-        console.log(schemaItem,"Schema ITEM Data!!!!!!")
-        const schemaKey = schemaItem?.required?.[0];
+        const schemaItem = (schema.oneOf || schema.anyOf || schema)[
+          selection.current
+        ];
+        const schemaKey = schemaItem?.required?.[0] || schema?.required?.[0];
         // in the case that the form data still returns correct form data => update schema
         if (formData[schemaKey]) {
           schemaObj.current = { [schemaKey]: formData[schemaKey] };

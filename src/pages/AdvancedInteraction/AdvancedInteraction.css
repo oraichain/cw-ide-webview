@@ -1,0 +1,22 @@
+.remove-button {
+    background: #c91743;
+    color: white;
+    padding: 12px 16px;
+    border: none;
+    font-family: "Courier";
+    line-height: 1;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.unsupported-field {
+    color: white;
+    font-family: "Courier";
+    line-height: 1;
+    font-size: 16px;
+}
