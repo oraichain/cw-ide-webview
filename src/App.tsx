@@ -556,11 +556,6 @@ const App = () => {
                           input={codeId}
                           setInput={setCodeId}
                         />
-                        <CustomInput
-                          inputHeader="Contract Address"
-                          input={migrateContractAddr}
-                          setInput={setMigrateContractAddr}
-                        />
                         <GasForm gasData={gasData} setGasData={setGasData}>
                           <CustomInput
                             inputHeader="Wallet mnemonic (optional)"
