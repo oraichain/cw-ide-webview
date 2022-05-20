@@ -81,10 +81,13 @@ const App = () => {
     }
     // if message payload is build => post message back to extension to collect schema file
 
+    console.log(message, "message received!!");
     if (message.action === "build") {
-      console.log(message, "MSG MIGRATESCHEMA");
       setInitSchema(processSchema(JSON.parse(message.schemaFile)));
-      setMigrateSchema(processSchema(JSON.parse(message.migrateSchemaFile)));
+      !_.isNil(message?.migrateSchemaFile) &&
+        setMigrateSchema(
+          processSchema(JSON.parse(message?.migrateSchemaFile)) || null
+        );
       setHandleSchema({});
       setQuerySchema({});
       setIsBuilt(true);
@@ -97,7 +100,9 @@ const App = () => {
       // console.log("query file: ", message.queryFile);
       let handleFile = processSchema(JSON.parse(message.handleFile));
       let queryFile = processSchema(JSON.parse(message.queryFile));
-      let migrateFile = processSchema(JSON.parse(message.migrateFile));
+      let migrateFile = !_.isNil(message?.migrateFile)
+        ? processSchema(JSON.parse(message?.migrateFile))
+        : null;
       setHandleSchema(handleFile);
       setQuerySchema(queryFile);
       onDeploy(
@@ -118,7 +123,9 @@ const App = () => {
       console.log("message instantiate: ", message);
       let handleFile = processSchema(JSON.parse(message.handleFile));
       let queryFile = processSchema(JSON.parse(message.queryFile));
-      let migrateFile = processSchema(JSON.parse(message.migrateFile));
+      let migrateFile = !_.isNil(message?.migrateFile)
+        ? processSchema(JSON.parse(message?.migrateFile))
+        : null;
       setHandleSchema(handleFile);
       setQuerySchema(queryFile);
       onInstantiate(
@@ -507,7 +514,7 @@ const App = () => {
                 >
                   <CustomSelect
                     displayMigrateOption={
-                      !_.isNil(e.migrateFile) ? true : false
+                      !_.isNil(e?.migrateFile) ? true : false
                     }
                     setInteractOption={setInteractOption}
                   />
@@ -542,7 +549,7 @@ const App = () => {
                       />
                     </div>
                   )}
-                  {interactOption === "migrate" && (
+                  {interactOption === "migrate" && !_.isNil(e?.migrateFile) && (
                     <div>
                       <div
                         style={{ marginTop: 8, marginBottom: -20 }}
@@ -566,7 +573,7 @@ const App = () => {
                           />
                         </GasForm>
                         <CustomForm
-                          schema={e.migrateFile}
+                          schema={e?.migrateFile}
                           onSubmit={(data) => onMigrate(data, e.contract)}
                         />
                       </div>
@@ -677,49 +684,51 @@ const App = () => {
                   />
                 </>
               </TabPane>
-              <TabPane className="tab" tab="Migrate" key="2">
-                <div className="wrap-form">
-                  <span className="please-text">
-                    Please fill out the form below to migrate the contract:
-                  </span>
-                  <CustomInput
-                    inputHeader="Code Id"
-                    input={codeId}
-                    setInput={setCodeId}
-                  />
-                  <CustomInput
-                    inputHeader="Contract Address"
-                    input={migrateContractAddr}
-                    setInput={setMigrateContractAddr}
-                  />
-                  <GasForm gasData={gasData} setGasData={setGasData}>
+              {!_.isNil(migrateSchema) && (
+                <TabPane className="tab" tab="Migrate" key="2">
+                  <div className="wrap-form">
+                    <span className="please-text">
+                      Please fill out the form below to migrate the contract:
+                    </span>
                     <CustomInput
-                      inputHeader="Wallet mnemonic (optional)"
-                      input={mnemonic}
-                      setInput={setMnemonic}
-                      placeholder="eg. foo bar"
-                      type={"password"}
+                      inputHeader="Code Id"
+                      input={codeId}
+                      setInput={setCodeId}
                     />
-                  </GasForm>
-                  <Form
-                    schema={migrateSchema}
-                    formData={migrateSchemaData}
-                    onChange={handleOnMigrateSchemaChange}
-                    onSubmit={(data) => setMigrateSchemaData(data.formData)}
-                    children={true}
-                  />
-                  <div className="button-wrapper">
-                    <Button
-                      onClick={() => {
-                        onMigrate(migrateSchemaData, migrateContractAddr);
-                      }}
-                      className="primary-button"
-                    >
-                      Migrate
-                    </Button>
+                    <CustomInput
+                      inputHeader="Contract Address"
+                      input={migrateContractAddr}
+                      setInput={setMigrateContractAddr}
+                    />
+                    <GasForm gasData={gasData} setGasData={setGasData}>
+                      <CustomInput
+                        inputHeader="Wallet mnemonic (optional)"
+                        input={mnemonic}
+                        setInput={setMnemonic}
+                        placeholder="eg. foo bar"
+                        type={"password"}
+                      />
+                    </GasForm>
+                    <Form
+                      schema={migrateSchema}
+                      formData={migrateSchemaData}
+                      onChange={handleOnMigrateSchemaChange}
+                      onSubmit={(data) => setMigrateSchemaData(data.formData)}
+                      children={true}
+                    />
+                    <div className="button-wrapper">
+                      <Button
+                        onClick={() => {
+                          onMigrate(migrateSchemaData, migrateContractAddr);
+                        }}
+                        className="primary-button"
+                      >
+                        Migrate
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </TabPane>
+                </TabPane>
+              )}
             </Tabs>
           </div>
         </div>
