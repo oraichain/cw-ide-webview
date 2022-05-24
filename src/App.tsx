@@ -809,7 +809,7 @@ const App = () => {
         </div>
       )} */}
       {!isBuilt && !isDeployed && !isLoading && !isUploaded && !errorMessage && (
-        <AdvancedInteraction updateChain={updateChain} gasData={gasData}>
+        <AdvancedInteraction updateChain={updateChain} gasData={gasData} mnemonic={mnemonic}> 
           <GasForm gasData={gasData} setGasData={setGasData}>
             <CustomInput
               inputHeader="Wallet mnemonic (optional)"
