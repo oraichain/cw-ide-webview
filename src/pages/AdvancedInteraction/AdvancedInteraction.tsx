@@ -23,8 +23,8 @@ const antIcon = (
   <LoadingOutlined style={{ fontSize: 24, color: "#7954FF" }} spin />
 );
 
-const AdvancedInteraction = ({ children, updateChain, gasData }) => {
-  const [mnemonic, setMnemonic] = useState("");
+const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
+  // const [mnemonic, setMnemonic] = useState("");
   // const [gasPrice, setGasPrice] = useState(
   //   window.chainStore.current.gasPriceStep?.average
   //     ? window.chainStore.current.gasPriceStep.average.toString()
@@ -133,6 +133,11 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
         with an existing smart contract.
       </div> */}
       <CustomNetwork updateChain={updateChain} />
+
+      <CustomSelect
+        displayMigrateOption={true}
+        setInteractOption={setInteractOption}
+      />
       <div className="wrap-form">
         <CustomInput
           inputHeader="Contract address"
@@ -141,8 +146,6 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
           placeholder="eg. orai1ars73g86y4kzajsgam5ee38npgmkq54dlzuz6w"
         />
       </div>
-
-      <CustomSelect displayMigrateOption={true} setInteractOption={setInteractOption} />
 
       {interactOption === "execute" && (
         <div>
@@ -256,11 +259,6 @@ const AdvancedInteraction = ({ children, updateChain, gasData }) => {
             <span>Contract Migrate </span>
           </div>
           <div className="wrap-form">
-            <CustomInput
-              inputHeader="Contract Address"
-              input={migrateContractAddr}
-              setInput={setMigrateContractAddr}
-            />
             <CustomInput
               inputHeader="Code Id"
               input={codeId}
