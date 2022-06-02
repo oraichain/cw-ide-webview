@@ -11,6 +11,8 @@ import { generateEndpointBroadcast, generatePostBodyBroadcast } from '@tharsis/p
 import { createMessageSend, createTxRawEIP712, signatureToWeb3Extension, createMessageConvertCoin } from '@tharsis/transactions'
 import { createTxRaw } from '@tharsis/proto';
 import {
+  GasPrice,
+  SigningStargateClient,
   StargateClient,
 } from "@cosmjs/stargate";
 
@@ -38,15 +40,15 @@ const CustomNetwork = ({ updateChain }) => {
 
 
     const keplr = await window.Keplr.getKeplr();
-    const wallet = await keplr.getOfflineSignerAuto('evmos_9000-1');
+    const wallet = keplr.getOfflineSigner('evmos_6666-1');
 
     const accounts = await wallet.getAccounts();
 
     console.log("wallet get accounts: ", accounts)
 
     const chain = {
-      chainId: 9000,
-      cosmosChainId: 'evmos_9000-1',
+      chainId: 6666,
+      cosmosChainId: 'evmos_6666-1',
     }
 
     const accAddress = accounts[0].address;
@@ -56,14 +58,15 @@ const CustomNetwork = ({ updateChain }) => {
       { method: 'GET' }
     ).then(data => data.json());
 
+    console.log("account info: ", accountInfo)
+    console.log("pubkey: ", Buffer.from(accounts[0].pubkey).toString('base64'))
+
     const sender = {
       accountAddress: accAddress,
       sequence: parseInt(accountInfo.account.base_account.sequence),
       accountNumber: parseInt(accountInfo.account.base_account.account_number),
       pubkey: Buffer.from(accounts[0].pubkey).toString('base64'),
     }
-    console.log("sender: ", sender)
-
     const fee = {
       amount: '0',
       denom: 'oraie',
@@ -73,7 +76,7 @@ const CustomNetwork = ({ updateChain }) => {
     const memo = 'foobar'
 
     const params = {
-      destinationAddress: '0x7482543Fc2BB9b78Cd8e2479bB642d4C20220735',
+      destinationAddress: '0x1dABA75408C6104757937bC2B8De6A28E6CFA8a0',
       amount: '1',
       denom: 'ibc/E8734BEF4ECF225B71825BC74DE30DCFF3644EAC9778FFD4EF9F94369B6C8377',
     }
@@ -88,15 +91,18 @@ const CustomNetwork = ({ updateChain }) => {
     const txRaw = createTxRaw(bodyBytes, authInfoBytes, [signature]).message.serialize();
 
     const client = await StargateClient.connect('http://localhost:26657');
+
+    // const client = await SigningStargateClient.connectWithSigner('http://localhost:26657', wallet, { prefix: 'evmos', gasPrice: GasPrice.fromString("0aphoton") });
     const txResult = await client.broadcastTx(txRaw);
+    // const txResult = await client.sendTokens(accounts[0].address, accounts[0].address, [{ amount: "1", denom: "ibc/E8734BEF4ECF225B71825BC74DE30DCFF3644EAC9778FFD4EF9F94369B6C8377" }], 'auto');
     console.log("tx result: ", txResult)
   }
 
   const handleTestEvmOs = async () => {
 
     const chain = {
-      chainId: 9000,
-      cosmosChainId: 'evmos_9000-1',
+      chainId: 6666,
+      cosmosChainId: 'evmos_6666-1',
     }
 
     const accAddress = 'evmos1sa2qx2k8je4fp83ww5es3h6khvyd40tf752s8j';

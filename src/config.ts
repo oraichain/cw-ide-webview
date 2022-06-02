@@ -53,7 +53,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
     {
         rpc: 'http://localhost:26657',
         rest: 'http://localhost:1317',
-        chainId: "evmos_9000-1",
+        chainId: "evmos_6666-1",
         chainName: "Evmos local",
         stakeCurrency: {
             coinDenom: "EVMOS",
@@ -90,9 +90,9 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
             },
         ],
         gasPriceStep: {
-            low: 10000000000,
-            average: 25000000000,
-            high: 40000000000,
+            low: 0,
+            average: 0,
+            high: 0,
         },
         features: ["ibc-transfer", "ibc-go"],
         explorerUrlToTx: 'https://testnet.scan.orai.io/txs/${txHash}',
