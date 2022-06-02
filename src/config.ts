@@ -51,6 +51,56 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         faucet: 'https://testnet-faucet.web.app/'
     },
     {
+        rpc: 'http://localhost:26657',
+        rest: 'http://localhost:1317',
+        chainId: "evmos_9000-1",
+        chainName: "Evmos local",
+        stakeCurrency: {
+            coinDenom: "EVMOS",
+            coinMinimalDenom: "aevmos",
+            coinDecimals: 18,
+            coinGeckoId: "evmos",
+        },
+        walletUrl:
+            process.env.NODE_ENV === "production"
+                ? "https://wallet.keplr.app/#/evmos/stake"
+                : "http://localhost:8080/#/evmos/stake",
+        walletUrlForStaking:
+            process.env.NODE_ENV === "production"
+                ? "https://wallet.keplr.app/#/evmos/stake"
+                : "http://localhost:8080/#/evmos/stake",
+        bip44: {
+            coinType: 60,
+        },
+        bech32Config: Bech32Address.defaultBech32Config("evmos"),
+        currencies: [
+            {
+                coinDenom: "EVMOS",
+                coinMinimalDenom: "aevmos",
+                coinDecimals: 18,
+                coinGeckoId: "evmos",
+            },
+        ],
+        feeCurrencies: [
+            {
+                coinDenom: "EVMOS",
+                coinMinimalDenom: "aevmos",
+                coinDecimals: 18,
+                coinGeckoId: "evmos",
+            },
+        ],
+        gasPriceStep: {
+            low: 10000000000,
+            average: 25000000000,
+            high: 40000000000,
+        },
+        features: ["ibc-transfer", "ibc-go"],
+        explorerUrlToTx: 'https://testnet.scan.orai.io/txs/${txHash}',
+        hdPath: "m/44'/118'/0'/0/0",
+        cosmwasmVersion: '0.13.2',
+        faucet: 'https://testnet-faucet.web.app/'
+    },
+    {
         rpc: 'https://rpc.cliffnet.cosmwasm.com/',
         rest: 'https://lcd.cliffnet.cosmwasm.com/',
         chainId: 'cliffnet-1',

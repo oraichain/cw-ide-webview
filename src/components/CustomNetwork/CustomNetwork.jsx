@@ -6,6 +6,14 @@ import { ReactComponent as IconChain } from "../../assets/icons/chain.svg";
 import { useEffect, useState } from "react";
 import { MyDropZone } from "..";
 
+// import { evmosToEth } from '@tharsis/address-converter'
+import { generateEndpointBroadcast, generatePostBodyBroadcast } from '@tharsis/provider'
+import { createMessageSend, createTxRawEIP712, signatureToWeb3Extension, createMessageConvertCoin } from '@tharsis/transactions'
+import { createTxRaw } from '@tharsis/proto';
+import {
+  StargateClient,
+} from "@cosmjs/stargate";
+
 const { Option } = Select;
 
 const CustomNetwork = ({ updateChain }) => {
@@ -22,16 +30,151 @@ const CustomNetwork = ({ updateChain }) => {
     setUpdateMessage("");
   };
 
-  const onAddChain = () => {
+  const handleTestKeplr = async () => {
+
+    window.chainStore.setChain('Evmos local')
+
+    await window.Keplr.suggestChain();
+
+
+    const keplr = await window.Keplr.getKeplr();
+    const wallet = keplr.getOfflineSignerOnlyAmino('evmos_9000-1');
+
+    const accounts = await wallet.getAccounts();
+
+    console.log("wallet get accounts: ", accounts)
+
+    const chain = {
+      chainId: 9000,
+      cosmosChainId: 'evmos_9000-1',
+    }
+
+    const accAddress = accounts[0].address;
+
+    let accountInfo = await fetch(
+      `http://localhost:1317/cosmos/auth/v1beta1/accounts/${accAddress}`,
+      { method: 'GET' }
+    ).then(data => data.json());
+
+    const sender = {
+      accountAddress: accAddress,
+      sequence: parseInt(accountInfo.account.base_account.sequence),
+      accountNumber: parseInt(accountInfo.account.base_account.account_number),
+      pubkey: Buffer.from(accounts[0].pubkey).toString('base64'),
+    }
+    console.log("sender: ", sender)
+
+    const fee = {
+      amount: '0',
+      denom: 'oraie',
+      gas: '2000000',
+    }
+
+    const memo = 'foobar'
+
+    const params = {
+      destinationAddress: '0x7482543Fc2BB9b78Cd8e2479bB642d4C20220735',
+      amount: '1',
+      denom: 'ibc/E8734BEF4ECF225B71825BC74DE30DCFF3644EAC9778FFD4EF9F94369B6C8377',
+    }
+
+    const msg = createMessageConvertCoin(chain, sender, fee, memo, params)
+
+    const bodyBytes = msg.signDirect.body.serialize();
+    const authInfoBytes = msg.signDirect.authInfo.serialize();
+
+    const result = await wallet.signDirect(accounts[0].address, { bodyBytes, authInfoBytes, chainId: chain.cosmosChainId, accountNumber: sender.accountNumber });
+    const signature = Buffer.from(result.signature.signature, "base64");
+    const txRaw = createTxRaw(bodyBytes, authInfoBytes, [signature]).message.serialize();
+
+    const client = await StargateClient.connect('http://localhost:26657');
+    const txResult = await client.broadcastTx(txRaw);
+    console.log("tx result: ", txResult)
+  }
+
+  const handleTestEvmOs = async () => {
+
+    const chain = {
+      chainId: 9000,
+      cosmosChainId: 'evmos_9000-1',
+    }
+
+    const accAddress = 'evmos1sa2qx2k8je4fp83ww5es3h6khvyd40tf752s8j';
+
+    let accountInfo = await fetch(
+      `http://localhost:1317/cosmos/auth/v1beta1/accounts/${accAddress}`,
+      { method: 'GET' }
+    ).then(data => data.json());
+
+    const sender = {
+      accountAddress: accAddress,
+      sequence: parseInt(accountInfo.account.base_account.sequence),
+      accountNumber: parseInt(accountInfo.account.base_account.account_number),
+      pubkey: 'A+D305VSq7ki8q8VBGu5ImzQIwAkqJGPDLnnk3vj4s9D',
+    }
+
+    const fee = {
+      amount: '0',
+      denom: 'oraie',
+      gas: '2000000',
+    }
+
+    const memo = 'foobar'
+
+    const params = {
+      destinationAddress: '0x3C5C6b570C1DA469E8B24A2E8Ed33c278bDA3222',
+      amount: '1',
+      denom: 'ibc/E8734BEF4ECF225B71825BC74DE30DCFF3644EAC9778FFD4EF9F94369B6C8377',
+    }
+
+    const msg = createMessageConvertCoin(chain, sender, fee, memo, params)
+
+    console.log("msg: ", JSON.stringify(msg.eipToSign))
+
+    // Request the signature
+    let signature = await window.ethereum.request({
+      method: 'eth_signTypedData_v4',
+      params: ['0x3C5C6b570C1DA469E8B24A2E8Ed33c278bDA3222', JSON.stringify(msg.eipToSign)],
+    });
+
+    // The chain and sender objects are the same as the previous example
+    let extension = signatureToWeb3Extension(chain, sender, signature)
+
+    console.log("msg legacy amino: ", msg.legacyAmino);
+
+    // Create the txRaw
+    let rawTx = createTxRawEIP712(msg.legacyAmino.body, msg.legacyAmino.authInfo, extension)
+
+    // Broadcast it
+    const postOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: generatePostBodyBroadcast(rawTx, 'BROADCAST_MODE_BLOCK'),
+    };
+
+    let broadcastPost = await fetch(
+      `http://localhost:1317${generateEndpointBroadcast()}`,
+      postOptions
+    );
+    let response = await broadcastPost.json();
+    console.log("response: ", response);
+  }
+
+  const onAddChain = async () => {
     try {
-      setErrorMessage("");
-      console.log("json file: ", jsonFile);
-      if (jsonFile.chainId) {
-        window.chainStore.addChain(jsonFile);
-        // set chain to auto trigger new chain store
-        setChainInfos(window.chainStore.chainInfos);
-        setUpdateMessage("Successfully added the new chain");
-      } else throw "Invalid chain data";
+
+      await window.ethereum.enable();
+      // console.log("window ethereum: ", window.ethereum);
+      await handleTestKeplr();
+
+      // setErrorMessage("");
+      // console.log("json file: ", jsonFile);
+      // if (jsonFile.chainId) {
+      //   window.chainStore.addChain(jsonFile);
+      //   // set chain to auto trigger new chain store
+      //   setChainInfos(window.chainStore.chainInfos);
+      //   setUpdateMessage("Successfully added the new chain");
+      // } else throw "Invalid chain data";
     } catch (error) {
       setErrorMessage(String(error));
       setUpdateMessage("");
