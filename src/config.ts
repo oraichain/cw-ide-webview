@@ -101,6 +101,56 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         faucet: 'https://testnet-faucet.web.app/'
     },
     {
+        rpc: 'http://167.172.151.137:26657',
+        rest: 'http://167.172.151.137:1317',
+        chainId: "kawaii_6886-1",
+        chainName: "Kawaii Islands sub",
+        stakeCurrency: {
+            coinDenom: "ORAIE",
+            coinMinimalDenom: "uoraie",
+            coinDecimals: 18,
+            coinGeckoId: "uoraie",
+        },
+        walletUrl:
+            process.env.NODE_ENV === "production"
+                ? "https://wallet.keplr.app/#/evmos/stake"
+                : "http://localhost:8080/#/evmos/stake",
+        walletUrlForStaking:
+            process.env.NODE_ENV === "production"
+                ? "https://wallet.keplr.app/#/evmos/stake"
+                : "http://localhost:8080/#/evmos/stake",
+        bip44: {
+            coinType: 60,
+        },
+        bech32Config: Bech32Address.defaultBech32Config("oraie"),
+        currencies: [
+            {
+                coinDenom: "ORAIE",
+                coinMinimalDenom: "uoraie",
+                coinDecimals: 18,
+                coinGeckoId: "oraie",
+            },
+        ],
+        feeCurrencies: [
+            {
+                coinDenom: "ORAIE",
+                coinMinimalDenom: "uoraie",
+                coinDecimals: 18,
+                coinGeckoId: "oraie",
+            },
+        ],
+        gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+        },
+        features: ["ibc-transfer", "ibc-go"],
+        explorerUrlToTx: 'https://testnet.scan.orai.io/txs/${txHash}',
+        hdPath: "m/44'/118'/0'/0/0",
+        cosmwasmVersion: '0.13.2',
+        faucet: 'https://testnet-faucet.web.app/'
+    },
+    {
         rpc: 'https://rpc.cliffnet.cosmwasm.com/',
         rest: 'https://lcd.cliffnet.cosmwasm.com/',
         chainId: 'cliffnet-1',

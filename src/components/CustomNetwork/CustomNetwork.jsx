@@ -34,13 +34,13 @@ const CustomNetwork = ({ updateChain }) => {
 
   const handleTestKeplr = async () => {
 
-    window.chainStore.setChain('Evmos local')
+    window.chainStore.setChain(window.chainStore.current.chainName)
 
     await window.Keplr.suggestChain();
 
 
     const keplr = await window.Keplr.getKeplr();
-    const wallet = keplr.getOfflineSigner('evmos_6666-1');
+    const wallet = keplr.getOfflineSigner(window.chainStore.current.chainId);
 
     const accounts = await wallet.getAccounts();
 
@@ -48,13 +48,13 @@ const CustomNetwork = ({ updateChain }) => {
 
     const chain = {
       chainId: 6666,
-      cosmosChainId: 'evmos_6666-1',
+      cosmosChainId: window.chainStore.current.chainId,
     }
 
     const accAddress = accounts[0].address;
 
     let accountInfo = await fetch(
-      `http://localhost:1317/cosmos/auth/v1beta1/accounts/${accAddress}`,
+      `${window.chainStore.current.rest}/cosmos/auth/v1beta1/accounts/${accAddress}`,
       { method: 'GET' }
     ).then(data => data.json());
 
@@ -76,7 +76,7 @@ const CustomNetwork = ({ updateChain }) => {
     const memo = 'foobar'
 
     const params = {
-      destinationAddress: '0x1dABA75408C6104757937bC2B8De6A28E6CFA8a0',
+      destinationAddress: '0x3C5C6b570C1DA469E8B24A2E8Ed33c278bDA3222',
       amount: '1',
       denom: 'ibc/E8734BEF4ECF225B71825BC74DE30DCFF3644EAC9778FFD4EF9F94369B6C8377',
     }
@@ -87,10 +87,11 @@ const CustomNetwork = ({ updateChain }) => {
     const authInfoBytes = msg.signDirect.authInfo.serialize();
 
     const result = await wallet.signDirect(accounts[0].address, { bodyBytes, authInfoBytes, chainId: chain.cosmosChainId, accountNumber: sender.accountNumber });
+    console.log("result signing: ", result);
     const signature = Buffer.from(result.signature.signature, "base64");
-    const txRaw = createTxRaw(bodyBytes, authInfoBytes, [signature]).message.serialize();
+    const txRaw = createTxRaw(result.signed.bodyBytes, result.signed.authInfoBytes, [signature]).message.serialize();
 
-    const client = await StargateClient.connect('http://localhost:26657');
+    const client = await StargateClient.connect(window.chainStore.current.rpc);
 
     // const client = await SigningStargateClient.connectWithSigner('http://localhost:26657', wallet, { prefix: 'evmos', gasPrice: GasPrice.fromString("0aphoton") });
     const txResult = await client.broadcastTx(txRaw);
@@ -101,22 +102,24 @@ const CustomNetwork = ({ updateChain }) => {
   const handleTestEvmOs = async () => {
 
     const chain = {
-      chainId: 6666,
-      cosmosChainId: 'evmos_6666-1',
+      chainId: 6886,
+      cosmosChainId: 'kawaii_6886-1',
     }
 
-    const accAddress = 'evmos1sa2qx2k8je4fp83ww5es3h6khvyd40tf752s8j';
+    const accAddress = 'oraie1sa2qx2k8je4fp83ww5es3h6khvyd40tfq0hf8j';
 
     let accountInfo = await fetch(
-      `http://localhost:1317/cosmos/auth/v1beta1/accounts/${accAddress}`,
+      `${window.chainStore.current.rest}/cosmos/auth/v1beta1/accounts/${accAddress}`,
       { method: 'GET' }
     ).then(data => data.json());
+
+    console.log("account info: ", accountInfo)
 
     const sender = {
       accountAddress: accAddress,
       sequence: parseInt(accountInfo.account.base_account.sequence),
       accountNumber: parseInt(accountInfo.account.base_account.account_number),
-      pubkey: 'A+D305VSq7ki8q8VBGu5ImzQIwAkqJGPDLnnk3vj4s9D',
+      pubkey: accountInfo.account.base_account.pub_key.key,
     }
 
     const fee = {
@@ -146,7 +149,7 @@ const CustomNetwork = ({ updateChain }) => {
     // The chain and sender objects are the same as the previous example
     let extension = signatureToWeb3Extension(chain, sender, signature)
 
-    console.log("msg legacy amino: ", msg.legacyAmino);
+    console.log("extension: ", extension);
 
     // Create the txRaw
     let rawTx = createTxRawEIP712(msg.legacyAmino.body, msg.legacyAmino.authInfo, extension)
@@ -159,7 +162,7 @@ const CustomNetwork = ({ updateChain }) => {
     };
 
     let broadcastPost = await fetch(
-      `http://localhost:1317${generateEndpointBroadcast()}`,
+      `${window.chainStore.current.rest}${generateEndpointBroadcast()}`,
       postOptions
     );
     let response = await broadcastPost.json();
@@ -171,7 +174,7 @@ const CustomNetwork = ({ updateChain }) => {
 
       await window.ethereum.enable();
       // console.log("window ethereum: ", window.ethereum);
-      await handleTestKeplr();
+      await handleTestEvmOs();
 
       // setErrorMessage("");
       // console.log("json file: ", jsonFile);
