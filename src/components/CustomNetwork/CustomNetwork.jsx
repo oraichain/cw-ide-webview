@@ -38,7 +38,7 @@ const CustomNetwork = ({ updateChain }) => {
 
 
     const keplr = await window.Keplr.getKeplr();
-    const wallet = keplr.getOfflineSignerOnlyAmino('evmos_9000-1');
+    const wallet = await keplr.getOfflineSignerAuto('evmos_9000-1');
 
     const accounts = await wallet.getAccounts();
 
