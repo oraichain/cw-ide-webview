@@ -43,7 +43,7 @@ const App = () => {
       ? window.chainStore.current.gasPriceStep.average.toString()
       : "0",
     gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom,
-    gasLimits: "200000",
+    gasLimits: 2000000,
   });
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -437,7 +437,7 @@ const App = () => {
       (e) => e.contract !== contract
     );
     window.localStorage.setItem(key, JSON.stringify([...array]));
-    setArrayContract(array);
+    getFilterLocalstorage();
   };
 
   const onMigrate = async (data: any, contract: any) => {
