@@ -21,7 +21,7 @@ class CosmJs extends CosmJsAbstract {
    * @param sentFunds - funds sent the contract
    * @returns - Contract address after the instantiation process
    */
-    async handleDeploy(args: { mnemonic: string, wasmBody: string, initInput: any, label?: string | undefined, source?: string | undefined, builder?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: InstantiateOptions, gasLimits?: { upload: 20000000, init: 15000000 } }) {
+    async handleDeploy(args: { mnemonic: string, wasmBody: string, initInput: any, label?: string | undefined, source?: string | undefined, builder?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: InstantiateOptions, gasLimits?: { upload: number, init: number } }) {
         const { mnemonic, wasmBody, initInput, label, source, gasAmount, builder, instantiateOptions, gasLimits } = args;
         const { current } = window.chainStore;
         // if keplr, we will try to suggest chain & enable it
@@ -52,7 +52,7 @@ class CosmJs extends CosmJsAbstract {
         }
     }
 
-    async handleUpload(args: { mnemonic: string, wasmBody: string, source?: string | undefined, builder?: string | undefined, gasAmount: { amount: string, denom: string }, gasLimits?: { upload: 20000000 } }) {
+    async handleUpload(args: { mnemonic: string, wasmBody: string, source?: string | undefined, builder?: string | undefined, gasAmount: { amount: string, denom: string }, gasLimits?: { upload: number } }) {
         const { mnemonic, wasmBody, source, gasAmount, builder, gasLimits } = args;
         const { current } = window.chainStore;
         // if keplr, we will try to suggest chain & enable it
@@ -79,7 +79,7 @@ class CosmJs extends CosmJsAbstract {
         }
     }
 
-    async handleInstantiate(args: { mnemonic: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: InstantiateOptions, gasLimits?: { init: 15000000 }, codeId: number }) {
+    async handleInstantiate(args: { mnemonic: string, initInput: any, label?: string | undefined, gasAmount: { amount: string, denom: string }, instantiateOptions?: InstantiateOptions, gasLimits?: { init: number }, codeId: number }) {
         const { mnemonic, initInput, label, gasAmount, instantiateOptions, gasLimits, codeId } = args;
         const { current } = window.chainStore;
         // if keplr, we will try to suggest chain & enable it
@@ -127,7 +127,7 @@ class CosmJs extends CosmJsAbstract {
      * @param args - an object containing essential parameters to execute contract
      * @returns - transaction hash after executing the contract
      */
-    async execute(args: { mnemonic?: string, address: string, handleMsg: string, handleOptions?: HandleOptions, gasAmount?: { amount: string, denom: string }, gasLimits?: { exec: 200000 } }) {
+    async execute(args: { mnemonic?: string, address: string, handleMsg: string, handleOptions?: HandleOptions, gasAmount?: { amount: string, denom: string }, gasLimits?: { exec: number } }) {
         try {
             const { mnemonic, address, handleMsg, handleOptions, gasAmount, gasLimits } = args;
             const { current } = window.chainStore;
@@ -150,7 +150,7 @@ class CosmJs extends CosmJsAbstract {
      * @param args - an object containing essential parameters to execute contract
      * @returns - transaction hash after executing the contract
      */
-     async migrate(args: { mnemonic?: string, codeId: number, address: string, handleMsg: string, handleOptions?: HandleOptions, gasAmount?: { amount: string, denom: string }, gasLimits?: { exec: 200000 } }) {
+    async migrate(args: { mnemonic?: string, codeId: number, address: string, handleMsg: string, handleOptions?: HandleOptions, gasAmount?: { amount: string, denom: string }, gasLimits?: { exec: number } }) {
         try {
             const { mnemonic, address, handleMsg, handleOptions, gasAmount, gasLimits, codeId } = args;
             const { current } = window.chainStore;

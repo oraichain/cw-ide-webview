@@ -407,6 +407,7 @@ const App = () => {
         address: contract,
         handleMsg: JSON.stringify(data),
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
+        gasLimits: parseGasLimits(gasData.gasLimits),
       });
       console.log("query result: ", queryResult);
       setResultJson([{ contract, data: queryResult }, ...resultJson]);
@@ -628,7 +629,7 @@ const App = () => {
               hideAdd={true}
               className="tabs"
               defaultActiveKey="1"
-              onChange={() => {}}
+              onChange={() => { }}
             >
               <TabPane className="tab" tab="Instantiate" key="1">
                 <>
@@ -642,7 +643,7 @@ const App = () => {
                       setInput={setLabel}
                     />
                     <GasForm gasData={gasData} setGasData={setGasData}>
-                      {}
+                      { }
                     </GasForm>
                     <CustomInput
                       inputHeader="Code Id"
