@@ -43,7 +43,7 @@ const App = () => {
       ? window.chainStore.current.gasPriceStep.average.toString()
       : "0",
     gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom,
-    gasLimits: "",
+    gasLimits: "200000",
   });
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -516,91 +516,91 @@ const App = () => {
                   {!_.isNil(
                     e?.queryFile || e?.handleFile || e?.migrateFile
                   ) && (
-                    <>
-                      <CustomSelect
-                        displayMigrateOption={
-                          !_.isNil(e?.migrateFile) ? true : false
-                        }
-                        setInteractOption={setInteractOption}
-                      />
-                      {interactOption === "execute" && (
-                        <div>
-                          <div className="contract">
-                            <span>Contract Execute </span>
-                          </div>
-                          <GasForm gasData={gasData} setGasData={setGasData}>
-                            <CustomInput
-                              inputHeader="Wallet mnemonic (optional)"
-                              input={mnemonic}
-                              setInput={setMnemonic}
-                              placeholder="eg. foo bar"
-                              type={"password"}
-                            />
-                          </GasForm>
-                          <CustomForm
-                            schema={e?.handleFile}
-                            onSubmit={(data) => onHandle(data, e.contract)}
-                          />
-                        </div>
-                      )}
-                      {interactOption === "query" && (
-                        <div>
-                          <div className="contract">
-                            <span>Contract Query </span>
-                          </div>
-                          <CustomForm
-                            schema={e?.queryFile}
-                            onSubmit={(data) => onQuery(data, e.contract)}
-                          />
-                        </div>
-                      )}
-                      {interactOption === "migrate" &&
-                        !_.isNil(e?.migrateFile) && (
+                      <>
+                        <CustomSelect
+                          displayMigrateOption={
+                            !_.isNil(e?.migrateFile) ? true : false
+                          }
+                          setInteractOption={setInteractOption}
+                        />
+                        {interactOption === "execute" && (
                           <div>
-                            <div
-                              style={{ marginTop: 8, marginBottom: -20 }}
-                              className="contract"
-                            >
-                              <span>Contract Migrate </span>
+                            <div className="contract">
+                              <span>Contract Execute </span>
                             </div>
-                            <div className="wrap-form">
+                            <GasForm gasData={gasData} setGasData={setGasData}>
                               <CustomInput
-                                inputHeader="Code Id"
-                                input={codeId}
-                                setInput={setCodeId}
+                                inputHeader="Wallet mnemonic (optional)"
+                                input={mnemonic}
+                                setInput={setMnemonic}
+                                placeholder="eg. foo bar"
+                                type={"password"}
                               />
-                              <GasForm
-                                gasData={gasData}
-                                setGasData={setGasData}
-                              >
-                                <CustomInput
-                                  inputHeader="Wallet mnemonic (optional)"
-                                  input={mnemonic}
-                                  setInput={setMnemonic}
-                                  placeholder="eg. foo bar"
-                                  type={"password"}
-                                />
-                              </GasForm>
-                              <CustomForm
-                                schema={e?.migrateFile}
-                                onSubmit={(data) => onMigrate(data, e.contract)}
-                              />
-                            </div>
+                            </GasForm>
+                            <CustomForm
+                              schema={e?.handleFile}
+                              onSubmit={(data) => onHandle(data, e.contract)}
+                            />
                           </div>
                         )}
-                      {!_.isEmpty(src) && (
-                        <div style={{ marginTop: "10px" }}>
-                          <ReactJson
-                            collapseStringsAfterLength={20}
-                            name={false}
-                            displayObjectSize={false}
-                            src={src}
-                            theme={"ocean"}
-                          />
-                        </div>
-                      )}
-                    </>
-                  )}
+                        {interactOption === "query" && (
+                          <div>
+                            <div className="contract">
+                              <span>Contract Query </span>
+                            </div>
+                            <CustomForm
+                              schema={e?.queryFile}
+                              onSubmit={(data) => onQuery(data, e.contract)}
+                            />
+                          </div>
+                        )}
+                        {interactOption === "migrate" &&
+                          !_.isNil(e?.migrateFile) && (
+                            <div>
+                              <div
+                                style={{ marginTop: 8, marginBottom: -20 }}
+                                className="contract"
+                              >
+                                <span>Contract Migrate </span>
+                              </div>
+                              <div className="wrap-form">
+                                <CustomInput
+                                  inputHeader="Code Id"
+                                  input={codeId}
+                                  setInput={setCodeId}
+                                />
+                                <GasForm
+                                  gasData={gasData}
+                                  setGasData={setGasData}
+                                >
+                                  <CustomInput
+                                    inputHeader="Wallet mnemonic (optional)"
+                                    input={mnemonic}
+                                    setInput={setMnemonic}
+                                    placeholder="eg. foo bar"
+                                    type={"password"}
+                                  />
+                                </GasForm>
+                                <CustomForm
+                                  schema={e?.migrateFile}
+                                  onSubmit={(data) => onMigrate(data, e.contract)}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        {!_.isEmpty(src) && (
+                          <div style={{ marginTop: "10px" }}>
+                            <ReactJson
+                              collapseStringsAfterLength={20}
+                              name={false}
+                              displayObjectSize={false}
+                              src={src}
+                              theme={"ocean"}
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
                 </DropdownItem>
               </div>
             );

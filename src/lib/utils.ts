@@ -19,7 +19,8 @@ const processSchema = (schema) => {
 
 export const parseGasLimits = (gasLimits) => {
     if (!gasLimits) return undefined;
-    return { upload: gasLimits, init: gasLimits, exec: gasLimits }
+    const gasLimitsInt = parseInt(gasLimits);
+    return { upload: gasLimitsInt, init: gasLimitsInt, exec: gasLimitsInt }
 }
 
 export { processSchema };
