@@ -63,6 +63,7 @@ const App = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isInteractionLoading, setIsInteractionLoading] = useState(false);
+  const [resultTxHash, setResultTxHash] = useState(null);
   const [deploySource, setDeploySource] = useState("");
   const [deployBuilder, setDeployBuilder] = useState("");
   const [instantiateOptions, setOptions] = useState(undefined);
@@ -96,6 +97,7 @@ const App = () => {
       setCodeId(undefined);
       setContractAddr("");
       setErrorMessage("");
+      setResultTxHash(null);
     } else if (message.action === "deploy") {
       // console.log("query file: ", message.queryFile);
       let handleFile = processSchema(JSON.parse(message.handleFile));
@@ -417,6 +419,7 @@ const App = () => {
   };
 
   const resetMessage = () => {
+    setResultTxHash(null);
     setErrorMessage("");
     setResultJson([]);
   };
@@ -438,6 +441,7 @@ const App = () => {
 
   const onMigrate = async (data: any, contract: any) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -451,6 +455,7 @@ const App = () => {
         // handleOptions: handleOptionsRef.current,
       });
       console.log("migrate result: ", migrateResult);
+      setResultTxHash(migrateResult);
       // setResultJson({ data: migrateResult });
     } catch (error) {
       setErrorMessage(String(error));
@@ -606,12 +611,20 @@ const App = () => {
           })}
       </div>
       {!isInteractionLoading ? (
-        errorMessage && (
-          <div className="contract-address">
-            <span style={{ color: "red" }}>Error message </span>
-            <p>{errorMessage}</p>
-          </div>
-        )
+        <>
+          {errorMessage && (
+            <div className="contract-address">
+              <span style={{ color: "red" }}>Error message </span>
+              <p>{errorMessage}</p>
+            </div>
+          )}
+          {resultTxHash && (
+            <div className="contract-address">
+              <span style={{ color: "white" }}>Result Tx hash: </span>
+              <p>{resultTxHash}</p>
+            </div>
+          )}
+        </>
       ) : (
         <div className="deploying">
           <Spin indicator={antIcon} />

@@ -38,6 +38,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [resultJson, setResultJson] = useState({});
   const [isInteractionLoading, setIsInteractionLoading] = useState(false);
+  const [resultTxHash, setResultTxHash] = useState(null);
   const [queryMessage, setQueryMessage] = useState("");
   const [executeMessage, setExecuteMessage] = useState("");
   const [migrateMessage, setMigrateMessage] = useState("");
@@ -60,6 +61,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
 
   const onQuery = async (data) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -79,6 +81,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
 
   const onHandle = async (data) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -102,6 +105,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
 
   const onMigrate = async (schemaUploaded) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -118,6 +122,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
       });
       console.log("Migrate result: ", migrateResult);
       setResultJson({ data: migrateResult });
+      setResultTxHash(migrateResult);
     } catch (error) {
       setErrorMessage(String(error));
     }
@@ -313,12 +318,20 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
       <div className="app-divider" />
 
       {!isInteractionLoading ? (
-        errorMessage && (
-          <div className="contract-address">
-            <span style={{ color: "red" }}>Error message </span>
-            <p>{errorMessage}</p>
-          </div>
-        )
+        <>
+          {errorMessage && (
+            <div className="contract-address">
+              <span style={{ color: "red" }}>Error message </span>
+              <p>{errorMessage}</p>
+            </div>
+          )}
+          {resultTxHash && (
+            <div className="contract-address">
+              <span style={{ color: "white" }}>Result Tx hash: </span>
+              <p>{resultTxHash}</p>
+            </div>
+          )}
+        </>
       ) : (
         <div className="deploying">
           <Spin indicator={antIcon} />
