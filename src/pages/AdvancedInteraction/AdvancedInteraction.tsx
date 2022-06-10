@@ -4,7 +4,7 @@ import "../../themes/style.scss";
 import { Button, Spin } from "antd";
 import Form from "@rjsf/antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import _ from "lodash";
+import _, { isNil } from "lodash";
 import ReactJson from "react-json-view";
 import CosmJsFactory from "src/lib/cosmjs-factory";
 import {
@@ -108,14 +108,17 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
     setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
+
+    console.log(migrateMessage,'MIGRATE')
     try {
-      let finalMessage = migrateMessage;
+      let finalMessage =
+        isNil(migrateMessage) || migrateMessage === "" ? {} : migrateMessage;
       if (schemaUploaded) finalMessage = JSON.stringify(schemaUploaded);
       const migrateResult = await cosmJs.current.migrate({
         mnemonic,
         address: migrateContractAddr,
         codeId: !_.isNil(codeId) && parseInt(codeId),
-        handleMsg: finalMessage,
+        handleMsg: JSON.stringify(finalMessage),
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: parseGasLimits(gasData.gasLimits),
         // handleOptions: handleOptionsRef.current,

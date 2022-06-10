@@ -445,12 +445,13 @@ const App = () => {
     setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
+    let handleMsg = isNil(data) || data === "" ? {} : data;
     try {
       const migrateResult = await cosmJs.current.migrate({
         mnemonic,
         address: migrateContractAddr || contract,
         codeId: !isNil(codeId) && parseInt(codeId),
-        handleMsg: JSON.stringify(data),
+        handleMsg: handleMsg,
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: parseGasLimits(gasData.gasLimits),
         // handleOptions: handleOptionsRef.current,
