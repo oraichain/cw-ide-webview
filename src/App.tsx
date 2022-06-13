@@ -451,7 +451,7 @@ const App = () => {
         mnemonic,
         address: migrateContractAddr || contract,
         codeId: !isNil(codeId) && parseInt(codeId),
-        handleMsg: handleMsg,
+        handleMsg: JSON.stringify(handleMsg),
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: parseGasLimits(gasData.gasLimits),
         // handleOptions: handleOptionsRef.current,
