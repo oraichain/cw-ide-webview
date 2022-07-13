@@ -4,7 +4,7 @@ import "../../themes/style.scss";
 import { Button, Spin } from "antd";
 import Form from "@rjsf/antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import _ from "lodash";
+import _, { isNil } from "lodash";
 import ReactJson from "react-json-view";
 import CosmJsFactory from "src/lib/cosmjs-factory";
 import {
@@ -38,6 +38,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [resultJson, setResultJson] = useState({});
   const [isInteractionLoading, setIsInteractionLoading] = useState(false);
+  const [resultTxHash, setResultTxHash] = useState(null);
   const [queryMessage, setQueryMessage] = useState("");
   const [executeMessage, setExecuteMessage] = useState("");
   const [migrateMessage, setMigrateMessage] = useState("");
@@ -60,6 +61,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
 
   const onQuery = async (data) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -79,6 +81,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
 
   const onHandle = async (data) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
@@ -102,22 +105,27 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
 
   const onMigrate = async (schemaUploaded) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
+
+    console.log(migrateMessage,'MIGRATE')
     try {
-      let finalMessage = migrateMessage;
+      let finalMessage =
+        isNil(migrateMessage) || migrateMessage === "" ? {} : migrateMessage;
       if (schemaUploaded) finalMessage = JSON.stringify(schemaUploaded);
       const migrateResult = await cosmJs.current.migrate({
         mnemonic,
         address: migrateContractAddr,
         codeId: !_.isNil(codeId) && parseInt(codeId),
-        handleMsg: finalMessage,
+        handleMsg: JSON.stringify(finalMessage),
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: parseGasLimits(gasData.gasLimits),
         // handleOptions: handleOptionsRef.current,
       });
       console.log("Migrate result: ", migrateResult);
       setResultJson({ data: migrateResult });
+      setResultTxHash(migrateResult);
     } catch (error) {
       setErrorMessage(String(error));
     }
@@ -313,12 +321,20 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
       <div className="app-divider" />
 
       {!isInteractionLoading ? (
-        errorMessage && (
-          <div className="contract-address">
-            <span style={{ color: "red" }}>Error message </span>
-            <p>{errorMessage}</p>
-          </div>
-        )
+        <>
+          {errorMessage && (
+            <div className="contract-address">
+              <span style={{ color: "red" }}>Error message </span>
+              <p>{errorMessage}</p>
+            </div>
+          )}
+          {resultTxHash && (
+            <div className="contract-address">
+              <span style={{ color: "white" }}>Result Tx hash: </span>
+              <p>{resultTxHash}</p>
+            </div>
+          )}
+        </>
       ) : (
         <div className="deploying">
           <Spin indicator={antIcon} />

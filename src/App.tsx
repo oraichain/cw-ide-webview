@@ -44,7 +44,7 @@ const App = () => {
       ? window.chainStore.current.gasPriceStep.average.toString()
       : "0",
     gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom,
-    gasLimits: "200000",
+    gasLimits: 2000000,
   });
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -64,6 +64,7 @@ const App = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isInteractionLoading, setIsInteractionLoading] = useState(false);
+  const [resultTxHash, setResultTxHash] = useState(null);
   const [deploySource, setDeploySource] = useState("");
   const [deployBuilder, setDeployBuilder] = useState("");
   const [instantiateOptions, setOptions] = useState(undefined);
@@ -98,6 +99,7 @@ const App = () => {
       setCodeId(undefined);
       setContractAddr("");
       setErrorMessage("");
+      setResultTxHash(null);
     } else if (message.action === "deploy") {
       // console.log("query file: ", message.queryFile);
       let handleFile = processSchema(JSON.parse(message.handleFile));
@@ -421,6 +423,7 @@ const App = () => {
   };
 
   const resetMessage = () => {
+    setResultTxHash(null);
     setErrorMessage("");
     setResultJson([]);
   };
@@ -437,24 +440,27 @@ const App = () => {
       (e) => e.contract !== contract
     );
     window.localStorage.setItem(key, JSON.stringify([...array]));
-    setArrayContract(array);
+    getFilterLocalstorage();
   };
 
   const onMigrate = async (data: any, contract: any) => {
     setErrorMessage("");
+    setResultTxHash(null);
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
+    let handleMsg = isNil(data) || data === "" ? {} : data;
     try {
       const migrateResult = await cosmJs.current.migrate({
         mnemonic,
         address: migrateContractAddr || contract,
         codeId: !isNil(codeId) && parseInt(codeId),
-        handleMsg: JSON.stringify(data),
+        handleMsg: JSON.stringify(handleMsg),
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: parseGasLimits(gasData.gasLimits),
         // handleOptions: handleOptionsRef.current,
       });
       console.log("migrate result: ", migrateResult);
+      setResultTxHash(migrateResult);
       // setResultJson({ data: migrateResult });
     } catch (error) {
       setErrorMessage(String(error));
@@ -611,12 +617,20 @@ const App = () => {
           })}
       </div>
       {!isInteractionLoading ? (
-        errorMessage && (
-          <div className="contract-address">
-            <span style={{ color: "red" }}>Error message </span>
-            <p>{errorMessage}</p>
-          </div>
-        )
+        <>
+          {errorMessage && (
+            <div className="contract-address">
+              <span style={{ color: "red" }}>Error message </span>
+              <p>{errorMessage}</p>
+            </div>
+          )}
+          {resultTxHash && (
+            <div className="contract-address">
+              <span style={{ color: "white" }}>Result Tx hash: </span>
+              <p>{resultTxHash}</p>
+            </div>
+          )}
+        </>
       ) : (
         <div className="deploying">
           <Spin indicator={antIcon} />
