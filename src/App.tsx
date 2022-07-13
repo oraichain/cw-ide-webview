@@ -1,5 +1,5 @@
 // hot reload
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import logo from "./logo.png";
 // import Form from "@rjsf/core";
 import Form from "@rjsf/antd";
@@ -14,6 +14,7 @@ import {
   CustomNetwork,
   CustomSelect,
   GasForm,
+  HandleOptions,
 } from "./components";
 import ReactJson from "react-json-view";
 import CosmJsFactory from "./lib/cosmjs-factory";
@@ -71,6 +72,7 @@ const App = () => {
   const [ideAction, setIdeAction] = useState("");
   const [arrayContract, setArrayContract] = useState([]);
   const [chainName, setChainName] = useState("Oraichain Testnet");
+  const handleOptionsRef = useRef(null);
 
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: any) => {
@@ -406,6 +408,7 @@ const App = () => {
         mnemonic,
         address: contract,
         handleMsg: JSON.stringify(data),
+        handleOptions: handleOptionsRef?.current,
         gasAmount: { amount: gasData.gasPrice, denom: gasData.gasDenom },
         gasLimits: parseGasLimits(gasData.gasLimits),
       });
@@ -537,6 +540,7 @@ const App = () => {
                                 type={"password"}
                               />
                             </GasForm>
+                            <HandleOptions handleOptionsRef={handleOptionsRef} />
                             <CustomForm
                               schema={e?.handleFile}
                               onSubmit={(data) => onHandle(data, e.contract)}
