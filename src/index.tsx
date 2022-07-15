@@ -1,4 +1,5 @@
 import * as ReactDOM from 'react-dom';
+import './polyfill';
 import App from './App';
 import './index.css';
 import Keplr from 'src/lib/Keplr';

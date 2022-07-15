@@ -3,11 +3,14 @@ const processSchema = (schema) => {
         if ((schema.oneOf || schema.anyOf)) {
             let key = 'anyOf';
             if (schema.oneOf) key = 'oneOf';
-            schema[key] = ((schema.oneOf || schema.anyOf)).map((item) => ({
-                ...item, title: item.required[0]
-                    .replace(/_/g, ' ')
-                    .replace(/(?<=^|\s+)\w/g, (v) => v.toUpperCase())
-            }))
+            schema[key] = ((schema.oneOf || schema.anyOf)).map((item) => {
+                console.log("item required: ", item.required[0])
+                return {
+                    ...item, title: item.required[0]
+                        .replace(/_/g, ' ')
+                        .replace(/(^|\s+)(\w)/g, (v, g1, g2) => g1 + g2.toUpperCase())
+                }
+            })
             return schema;
         }
         return schema

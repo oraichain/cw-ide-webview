@@ -2452,6 +2452,15 @@
     secretjs "^0.17.0"
     tsyringe "^4.4.0"
 
+"@keplr-wallet/common@^0.10.12":
+  version "0.10.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/common/-/common-0.10.12.tgz#f6abb0bcf233d030d4b2facd06389a3080152c04"
+  integrity sha512-EbDNt/J1AJdl+ltc5yjXCyv6pTHybNl5ktHccHi5cP2n1hTyuv82C1NKtMzEHzHGtmGGMBh65SdrTu4FcFXsmw==
+  dependencies:
+    "@keplr-wallet/crypto" "0.10.12"
+    buffer "^6.0.3"
+    delay "^4.4.0"
+
 "@keplr-wallet/common@^0.9.10":
   version "0.9.10"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/common/-/common-0.9.10.tgz#4dd48c766823f80eee700a9f345c84e17121c85c"
@@ -2475,6 +2484,19 @@
     buffer "^6.0.3"
     long "^4.0.0"
     protobufjs "^6.10.2"
+
+"@keplr-wallet/crypto@0.10.12":
+  version "0.10.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.10.12.tgz#a70e487717c03935e812cce5691b01a1435257fe"
+  integrity sha512-cSw3HgK/SrK1M8/ttjjlzzh9VQtIp7NZ22l52HsuMCgw/bWeFokgmiifocCNK9l08omWZTP4jpMWvZn381U5Pw==
+  dependencies:
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
 
 "@keplr-wallet/crypto@^0.9.10":
   version "0.9.10"
@@ -4693,7 +4715,7 @@ bs58@^4.0.0:
   dependencies:
     base-x "^3.0.2"
 
-bs58check@<3.0.0, bs58check@^2.1.1:
+bs58check@<3.0.0, bs58check@^2.1.1, bs58check@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/bs58check/-/bs58check-2.1.2.tgz#53b018291228d82a5aa08e7d796fdafda54aebfc"
   integrity sha512-0TS1jicxdU09dwJMNZtVAfzPi6Q6QeN0pM1Fkzrjn+XYHvzMKPU3pHVpva+769iNVSfIYWf7LJ6WR+BuuMf8cA==
