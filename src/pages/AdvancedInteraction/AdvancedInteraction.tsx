@@ -85,6 +85,8 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
     try {
+      console.log("data: ", executeMessage);
+      console.log("data: ", data);
       let finalMessage = executeMessage;
       if (data) finalMessage = JSON.stringify(data);
       const queryResult = await cosmJs.current.execute({
@@ -109,7 +111,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
     setIsInteractionLoading(true);
     let cosmJs = new CosmJsFactory(window.chainStore.current);
 
-    console.log(migrateMessage,'MIGRATE')
+    console.log(migrateMessage, 'MIGRATE')
     try {
       let finalMessage =
         isNil(migrateMessage) || migrateMessage === "" ? {} : migrateMessage;
