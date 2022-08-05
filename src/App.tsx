@@ -252,7 +252,7 @@ const App = () => {
   const onUpload = async (mnemonic: any, wasmBytes: any) => {
     console.log("wasm bytes: ", wasmBytes);
     if (!wasmBytes) {
-      setErrorMessage("Wasm bytes is empty!");
+      setErrorMessage("Wasm bytes is empty! You need to build the smart contract first to get the wasm binary file before uploading.");
       return;
     }
     actionHandling("Uploading");
@@ -292,11 +292,11 @@ const App = () => {
   ) => {
     console.log("Instantiate data: ", initSchemaData);
     if (!initSchemaData) {
-      setErrorMessage("Instantiate data is empty!");
+      setErrorMessage("Instantiate data is empty! You need to build or upload the smart contract first to get the instantiate json schema & fill the inputs to deploy or instantiate the contract");
       return;
     }
     if (!codeId) {
-      setErrorMessage("Code id is empty!");
+      setErrorMessage("Code id is empty! You need to fill the contract's code id or upload the contract first");
       return;
     }
     actionHandling("Instantiating");
@@ -342,7 +342,7 @@ const App = () => {
   ) => {
     console.log("Instantiate data: ", initSchemaData);
     if (!initSchemaData) {
-      setErrorMessage("Instantiate data is empty!");
+      setErrorMessage("Instantiate data is empty! You need to build or upload the smart contract first to get the instantiate json schema & fill the inputs to deploy or instantiate the contract");
       return;
     }
     actionHandling("Deploying");
