@@ -56,7 +56,6 @@ At the moment, you need to create a PR submitting your network information. Afte
         "ibc-transfer",
         "cosmwasm"
     ],
-    "hdPath": "m/44'/118'/0'/0/0", // the wallet path of your network.
     "cosmwasmVersion": "0.13.2" // the cosmwasm std your network is using.
 }
 ```

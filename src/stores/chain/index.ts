@@ -8,7 +8,6 @@ export interface ChainInfoWithExplorer extends ChainInfo {
     // Formed as "https://explorer.com/{txHash}"
     explorerUrlToTx?: string;
     faucet?: string;
-    hdPath: string,
     cosmwasmVersion: string,
 }
 

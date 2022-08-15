@@ -26,7 +26,7 @@ export default class CosmJsAbstract {
     }
     async execute(_args: { mnemonic: string, address: string, handleMsg: string, handleOptions?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
         throw new Error("Method 'execute()' must be implemented.");
-    }async migrate(_args: { mnemonic: string, address: string, codeId: any, handleMsg: string, handleOptions?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
+    } async migrate(_args: { mnemonic: string, address: string, codeId: any, handleMsg: string, handleOptions?: any, gasAmount: { amount: string, denom: string }, gasLimits?: any }): Promise<any> {
         throw new Error("Method 'execute()' must be implemented.");
     }
 
@@ -44,7 +44,7 @@ export default class CosmJsAbstract {
             const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
                 mnemonic,
                 {
-                    hdPaths: [stringToPath(current.hdPath ? current.hdPath : "m/44'/118'/0'/0/0")],
+                    hdPaths: [stringToPath(`m/44'/${current.bip44.coinType}'/0'/0/0`)],
                     prefix: current.bech32Config.bech32PrefixAccAddr
                 }
             );

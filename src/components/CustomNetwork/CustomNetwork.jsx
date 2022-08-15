@@ -115,7 +115,7 @@ const CustomNetwork = ({ updateChain }) => {
               setSchema={null}
               setJson={handleJsonFile}
               dropZoneText={
-                "Drop the chain info json file here to add / remove chain"
+                "Upload the chain info json file here to add / remove chain"
               }
             />
           </div>

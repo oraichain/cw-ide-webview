@@ -46,7 +46,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         },
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://testnet.scan.orai.io/txs/${txHash}',
-        hdPath: "m/44'/118'/0'/0/0",
         cosmwasmVersion: '0.13.2',
         faucet: 'https://testnet-faucet.web.app/'
     },
@@ -94,7 +93,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         },
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://block-explorer.cliffnet.cosmwasm.com/transactions/{txHash}',
-        hdPath: "m/44'/118'/0'/0/0",
         cosmwasmVersion: '1.0.0',
         faucet: 'https://faucet.cliffnet.cosmwasm.com/'
     },
@@ -136,7 +134,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         },
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://uni.junoscan.com',
-        hdPath: "m/44'/118'/0'/0/0",
         cosmwasmVersion: '0.16.0',
         faucet: 'https://faucet.uni.juno.deuslabs.fi'
     },
@@ -189,7 +186,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         },
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://scan.orai.io/txs/${txHash}',
-        hdPath: "m/44'/118'/0'/0/0",
         cosmwasmVersion: '0.13.2'
     },
     // {
@@ -325,7 +321,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://explorer.test.provenance.io/tx/{txHash}',
         cosmwasmVersion: '0.16.0',
-        hdPath: "m/44'/118'/0'/0/0",
     },
     {
         rpc: 'https://rpc-stargateworld.fetch.ai',
@@ -370,7 +365,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         ],
         features: ['stargate', 'ibc-transfer', 'cosmwasm'],
         explorerUrlToTx: 'https://explore-stargateworld.fetch.ai/transactions/{txHash}',
-        hdPath: "m/44'/118'/0'/0/0",
         cosmwasmVersion: '0.14.0'
     },
     // {
