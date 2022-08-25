@@ -188,95 +188,6 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         explorerUrlToTx: 'https://scan.orai.io/txs/${txHash}',
         cosmwasmVersion: '0.13.2'
     },
-    // {
-    //     rpc: 'https://bombay-fcd.terra.dev',
-    //     rest: 'https://bombay-fcd.terra.dev',
-    //     chainId: 'bombay-12',
-    //     chainName: 'Terra Network Testnet',
-    //     stakeCurrency: {
-    //         coinDenom: 'LUNA',
-    //         coinMinimalDenom: 'uluna',
-    //         coinDecimals: 6,
-    //         coinGeckoId: 'terra-luna',
-    //         coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //     },
-    //     bip44: {
-    //         coinType: 118,
-    //     },
-    //     bech32Config: Bech32Address.defaultBech32Config('terra'),
-    //     currencies: [
-    //         {
-    //             coinDenom: 'LUMA',
-    //             coinMinimalDenom: 'uluna',
-    //             coinDecimals: 6,
-    //             coinGeckoId: 'terra-luna',
-    //             coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //         },
-    //         {
-    //             coinDenom: 'LUMA',
-    //             coinMinimalDenom: 'uluna',
-    //             coinDecimals: 6,
-    //             coinGeckoId: 'terra-luna',
-    //             coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //         },
-    //     ],
-    //     feeCurrencies: [
-    //         {
-    //             coinDenom: 'LUNA',
-    //             coinMinimalDenom: 'uluna',
-    //             coinDecimals: 6,
-    //             coinGeckoId: 'terra-luna',
-    //             coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //         },
-    //     ],
-    //     features: ['stargate', 'ibc-transfer', 'cosmwasm'],
-    //     explorerUrlToTx: 'https://finder.terra.money/testnet/tx/{txHash}',
-    //     faucet: 'https://faucet.terra.money',
-    // },
-    // {
-    //     rpc: 'https://bombay-fcd.terra.dev',
-    //     rest: 'https://fcd.terra.dev',
-    //     chainId: 'columbus-5',
-    //     chainName: 'Terra Network',
-    //     stakeCurrency: {
-    //         coinDenom: 'LUNA',
-    //         coinMinimalDenom: 'uluna',
-    //         coinDecimals: 6,
-    //         coinGeckoId: 'terra-luna',
-    //         coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //     },
-    //     bip44: {
-    //         coinType: 118,
-    //     },
-    //     bech32Config: Bech32Address.defaultBech32Config('terra'),
-    //     currencies: [
-    //         {
-    //             coinDenom: 'LUMA',
-    //             coinMinimalDenom: 'uluna',
-    //             coinDecimals: 6,
-    //             coinGeckoId: 'terra-luna',
-    //             coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //         },
-    //         {
-    //             coinDenom: 'LUMA',
-    //             coinMinimalDenom: 'uluna',
-    //             coinDecimals: 6,
-    //             coinGeckoId: 'terra-luna',
-    //             coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //         },
-    //     ],
-    //     feeCurrencies: [
-    //         {
-    //             coinDenom: 'LUNA',
-    //             coinMinimalDenom: 'uluna',
-    //             coinDecimals: 6,
-    //             coinGeckoId: 'terra-luna',
-    //             coinImageUrl: window.location.origin + '/public/assets/tokens/terra.png',
-    //         },
-    //     ],
-    //     features: ['stargate', 'ibc-transfer', 'cosmwasm'],
-    //     explorerUrlToTx: 'https://finder.terra.money/mainnet/tx/{txHash}',
-    // },
     {
         rpc: 'https://rpc.test.provenance.io',
         rest: 'https://lcd.test.provenance.io',
@@ -367,6 +278,56 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
         explorerUrlToTx: 'https://explore-stargateworld.fetch.ai/transactions/{txHash}',
         cosmwasmVersion: '0.14.0'
     },
+    {
+        "rpc": "https://rpc.malaga-420.cosmwasm.com",
+        "rest": "https://api.malaga-420.cosmwasm.com",
+        "chainId": "malaga-420",
+        "chainName": "Malaga",
+        "stakeCurrency": {
+            "coinDenom": "Málaga",
+            "coinMinimalDenom": "umlg",
+            "coinDecimals": 6,
+            "coinImageUrl": ""
+        },
+        "bip44": {
+            "coinType": 118
+        },
+        "bech32Config": {
+            "bech32PrefixAccAddr": "wasm",
+            "bech32PrefixAccPub": "wasmpub",
+            "bech32PrefixConsAddr": "wasmvalcons",
+            "bech32PrefixConsPub": "wasmvalconspub",
+            "bech32PrefixValAddr": "wasmvaloper",
+            "bech32PrefixValPub": "wasmvaloperpub"
+        },
+        "currencies": [
+            {
+                "coinDenom": "Málaga",
+                "coinMinimalDenom": "umlg",
+                "coinDecimals": 6,
+                "coinImageUrl": ""
+            }
+        ],
+        "feeCurrencies": [
+            {
+                "coinDenom": "Málaga",
+                "coinMinimalDenom": "umlg",
+                "coinDecimals": 6,
+                "coinImageUrl": ""
+            }
+        ],
+        "gasPriceStep": {
+            "low": 0,
+            "average": 0.025,
+            "high": 0.004
+        },
+        "features": [
+            "stargate",
+            "ibc-transfer",
+            "cosmwasm"
+        ],
+        "cosmwasmVersion": "1.0.0"
+    }
     // {
     //     rpc: 'https://rpc-regen.keplr.app',
     //     rest: 'https://lcd-regen.keplr.app',
