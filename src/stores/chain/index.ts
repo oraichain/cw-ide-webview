@@ -17,6 +17,7 @@ export interface ChainInfoWithExplorer extends ChainInfo {
 export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
     @observable
     protected chainId: string;
+    protected embedChainArr: Array<ChainInfo>;
 
     /**
      * Constructor of the ChainStore class. By default, we choose the first chain info in the list of chain infos.
@@ -24,21 +25,26 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
      */
     constructor(embedChainInfos: ChainInfoWithExplorer[]) {
 
-        // get chains from local storage first. If empty then set it. If not then use it instead of default
-        let chains: string | ChainInfoWithExplorer[] | null = localStorage.getItem('chain-infos');
-        if (!chains) {
-            chains = embedChainInfos;
-            // store chain into local storage
-            localStorage.setItem('chain-infos', JSON.stringify(embedChainInfos));
-        } else {
-            // parse the local storage data cuz when we store we have stringtified it
-            chains = JSON.parse(chains) as ChainInfoWithExplorer[];
-        }
-
-        super(chains);
-        this.chainId = chains[0].chainId;
-        makeObservable(this);
+    // get chains from local storage first. If empty then set it. If not then use it instead of default
+    let chains: string | ChainInfoWithExplorer[] | null =
+      localStorage.getItem("chain-infos");
+    if (!chains) {
+      chains = embedChainInfos;
+      // store chain into local storage
+      // localStorage.setItem('chain-infos', JSON.stringify(embedChainInfos));
+    } else {
+      // parse the local storage data cuz when we store we have stringtified it
+      chains = [
+        ...embedChainInfos,
+        ...JSON.parse(chains),
+      ] as ChainInfoWithExplorer[];
     }
+
+    super(chains);
+    this.chainId = chains[0].chainId || "Oraichain";
+    this.embedChainArr = embedChainInfos;
+    makeObservable(this);
+  }
 
     @computed
     get current(): ChainInfoWithExplorer {
@@ -73,27 +79,37 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
     @action
     addChain(chainInfo: ChainInfoWithExplorer) {
         // the new chain info must have a different chain id & chain name
-        let chainInfos = this.getChainInfosRaw();
-        let isTheSameInfo = chainInfos.filter(info => info.chainId === chainInfo.chainId || info.chainName === chainInfo.chainName);
-        if (isTheSameInfo.length > 0) {
-            throw "This chain is already included. Cannot add in the list";
-        }
-        chainInfos.push(chainInfo);
-        this.setChainInfos(chainInfos);
-        // also update in local storage
-        localStorage.setItem('chain-infos', JSON.stringify(chainInfos));
+        // let chainInfos = this.getChainInfosRaw();
+    let chainInfos = JSON.parse(localStorage.getItem("chain-infos") || "[]");
+    let isTheSameInfo =
+      chainInfos &&
+      chainInfos.filter(
+        (info) =>
+          info.chainId === chainInfo.chainId ||
+          info.chainName === chainInfo.chainName
+      );
+    if (isTheSameInfo.length > 0) {
+      throw "This chain is already included. Cannot add in the list";
     }
+    chainInfos.push(chainInfo);
+    // this.setChainInfos(chainInfos);
+    this.setChainInfos([...this.embedChainArr, ...chainInfos]);
+    // also update in local storage
+    localStorage.setItem("chain-infos", JSON.stringify(chainInfos));
+  }
 
     @action
     removeChain(chainId: string) {
         // the new chain info must have a different chain id & chain name
         let chain = this.getChain(chainId);
         if (!chain) {
-            throw "This chain is not in the list. Cannot remove";
+          throw "This chain is not in the list. Cannot remove";
         }
-        let chainInfos = this.getChainInfosRaw();
-        chainInfos = chainInfos.filter(info => info.chainId !== chainId);
-        this.setChainInfos(chainInfos);
+    // let chainInfos = this.getChainInfosRaw();
+        let chainInfos = JSON.parse(localStorage.getItem("chain-infos") || "[]");
+        chainInfos = chainInfos.filter((info) => info.chainId !== chainId);
+    // this.setChainInfos(chainInfos);
+    this.setChainInfos([...this.embedChainArr, ...chainInfos]);
         // also update in local storage
         localStorage.setItem('chain-infos', JSON.stringify(chainInfos));
     }
