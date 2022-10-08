@@ -46,7 +46,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
     },
     features: ["stargate", "ibc-transfer", "cosmwasm"],
     explorerUrlToTx: "https://testnet.scan.orai.io/txs/${txHash}",
-    cosmwasmVersion: "0.13.2",
+    cosmwasmVersion: "1.0.0",
     faucet: "https://testnet-faucet.web.app/"
   },
   {
