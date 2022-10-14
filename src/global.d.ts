@@ -1,6 +1,6 @@
 import { BroadCastMode } from '@oraichain/cosmosjs';
 import Keplr from './lib/Keplr';
-import { Keplr as keplr } from './types/kelpr/wallet';
+import { Keplr as keplr } from '@keplr-wallet/types';
 import Wasm from './lib/wasm';
 import { ChainStore } from './stores/chain';
 

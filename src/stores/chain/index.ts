@@ -7,11 +7,18 @@ import {
 
 import { ChainInfo } from "@keplr-wallet/types";
 
+type GasPriceStep = {
+  low: number,
+  average: number,
+  high: number
+}
+
 export interface ChainInfoWithExplorer extends ChainInfo {
   // Formed as "https://explorer.com/{txHash}"
   explorerUrlToTx?: string;
   faucet?: string;
   cosmwasmVersion: string;
+  gasPriceStep: GasPriceStep
 }
 
 /**
