@@ -13,3 +13,28 @@ window.chainStore = new ChainStore(EmbedChainInfos);
 window.Keplr = new Keplr();
 
 ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
+
+let ctrlDown = false;
+const ctrlKey = 'Meta';
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === ctrlKey) ctrlDown = true;
+});
+document.addEventListener('keyup', (e) => {
+  if (e.key === ctrlKey) ctrlDown = false;
+});
+
+document.addEventListener('keydown', (e) => {
+  if (ctrlDown) {
+    switch (e.key) {
+      case 'v':
+        return document.execCommand('paste');
+      case 'c':
+        return document.execCommand('copy');
+      case 'x':
+        return document.execCommand('cut');
+      case 'a':
+        return document.execCommand('selectAll');
+    }
+  }
+});
