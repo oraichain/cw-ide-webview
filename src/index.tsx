@@ -5,7 +5,6 @@ import "./index.css";
 import Keplr from "src/lib/Keplr";
 import { ChainStore } from "./stores/chain";
 import { EmbedChainInfos } from "./config";
-import * as os from "os";
 
 window.chainStore = new ChainStore(EmbedChainInfos);
 
@@ -37,7 +36,7 @@ if (navigator.platform.indexOf('Mac') > -1) {
 
   document.addEventListener("keydown", e => {
     if (ctrlDown) {
-      let command = commandMap[e.shiftKey ? "shift_" : "" + e.key];
+      const command = commandMap[e.shiftKey ? "shift_" : "" + e.key];
       if (command) document.execCommand(command);
     }
   });
