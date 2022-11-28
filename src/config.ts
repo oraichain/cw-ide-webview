@@ -98,7 +98,7 @@ export const EmbedChainInfos: ChainInfoWithExplorer[] = [
     },
     features: ["stargate", "ibc-transfer", "cosmwasm"],
     explorerUrlToTx: "https://scan.orai.io/txs/${txHash}",
-    cosmwasmVersion: "0.13.2"
+    cosmwasmVersion: "1.0.0"
   },
   {
     rpc: "https://rpc.malaga-420.cosmwasm.com",
