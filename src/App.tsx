@@ -46,14 +46,11 @@ const App = () => {
     gasDenom: window.chainStore.current.feeCurrencies[0].coinMinimalDenom,
     gasLimits: 2000000,
   });
-  const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [initSchema, setInitSchema] = useState(undefined);
   const [migrateSchema, setMigrateSchema] = useState(undefined);
   const [migrateSchemaData, setMigrateSchemaData] = useState("");
   const [migrateContractAddr, setMigrateContractAddr] = useState("");
-  const [querySchema, setQuerySchema] = useState({});
-  const [handleSchema, setHandleSchema] = useState({});
   // const [resultJson, setResultJson] = useState({});
   const [resultJson, setResultJson] = useState<
     Array<{
@@ -86,29 +83,25 @@ const App = () => {
 
     console.log(message, "message received!!");
     if (message.action === "build") {
-      setInitSchema(processSchema(JSON.parse(message.schemaFile)));
-      !_.isNil(message?.migrateSchemaFile) &&
+      setInitSchema(processSchema(JSON.parse(message.schemaFile).instantiate));
+      if (JSON.parse(message.schemaFile).migrate) {
         setMigrateSchema(
-          processSchema(JSON.parse(message?.migrateSchemaFile)) || null
+          processSchema(JSON.parse(message.schemaFile).migrate)
         );
-      setHandleSchema({});
-      setQuerySchema({});
+      }
       setIsBuilt(true);
       setIsUploaded(false);
       setIsDeployed(false);
       setCodeId(undefined);
-      setContractAddr("");
       setErrorMessage("");
       setResultTxHash(null);
     } else if (message.action === "deploy") {
       // console.log("query file: ", message.queryFile);
-      let handleFile = processSchema(JSON.parse(message.handleFile));
-      let queryFile = processSchema(JSON.parse(message.queryFile));
-      let migrateFile = !_.isNil(message?.migrateFile)
-        ? processSchema(JSON.parse(message?.migrateFile))
+      let handleFile = processSchema(JSON.parse(message.schemaFile).execute);
+      let queryFile = processSchema(JSON.parse(message.schemaFile).query);
+      let migrateFile = !_.isNil(JSON.parse(message.schemaFile).migrate)
+        ? processSchema(JSON.parse(message.schemaFile).migrate)
         : null;
-      setHandleSchema(handleFile);
-      setQuerySchema(queryFile);
       onDeploy(
         message.mnemonic,
         message.payload,
@@ -119,19 +112,17 @@ const App = () => {
       );
     } else if (message.action === "upload") {
       console.log("message upload: ", message);
-      setInitSchema(processSchema(JSON.parse(message.schemaFile)));
+      setInitSchema(processSchema(JSON.parse(message.schemaFile).instantiate));
       onUpload(message.mnemonic, message.payload);
     }
     // else if (message.action === "instantiate") {
     else if (message.action === "instantiate") {
       console.log("message instantiate: ", message);
-      let handleFile = processSchema(JSON.parse(message.handleFile));
-      let queryFile = processSchema(JSON.parse(message.queryFile));
-      let migrateFile = !_.isNil(message?.migrateFile)
-        ? processSchema(JSON.parse(message?.migrateFile))
+      let handleFile = processSchema(JSON.parse(message.schemaFile).execute);
+      let queryFile = processSchema(JSON.parse(message.schemaFile).query);
+      let migrateFile = !_.isNil(JSON.parse(message.schemaFile).migrate)
+        ? processSchema(JSON.parse(message.schemaFile).migrate)
         : null;
-      setHandleSchema(handleFile);
-      setQuerySchema(queryFile);
       onInstantiate(
         message.mnemonic,
         handleFile,
@@ -272,7 +263,6 @@ const App = () => {
       setIsUploaded(true);
       setIsBuilt(true);
       setIsDeployed(false);
-      setContractAddr("");
 
       // clear all uploading data
       setDeploySource("");
@@ -315,7 +305,6 @@ const App = () => {
       });
       console.log("contract address: ", address);
       setLocalstorage(address, handleFile, queryFile, migrateFile, action);
-      setContractAddr(address);
       setIsDeployed(true);
       setIsBuilt(false);
       setIsUploaded(false);
