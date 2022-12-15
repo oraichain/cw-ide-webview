@@ -20,6 +20,10 @@ Enter your `json message` and press the button
 
 ![flow](./images/flow.gif)
 
+Please refer to the official CosmWasm IDE documentation which includes all repos related to it:
+
+- [Official CosmWasm IDE documentation](https://github.com/oraichain/cw-ide-docs)
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
