@@ -16,7 +16,7 @@ import {
   CustomSelect,
   CustomNetwork,
 } from "src/components";
-import { parseGasLimits, processSchema } from "src/lib/utils";
+import { actionType, parseGasLimits, processSchema } from "src/lib/utils";
 import "./AdvancedInteraction.css";
 
 const antIcon = (
@@ -33,9 +33,7 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
   const [queryMessage, setQueryMessage] = useState("");
   const [executeMessage, setExecuteMessage] = useState("");
   const [migrateMessage, setMigrateMessage] = useState("");
-  const [querySchema, setQuerySchema] = useState({});
-  const [handleSchema, setHandleSchema] = useState({});
-  const [migrateSchema, setMigrateSchema] = useState({});
+  const [schema, setSchema] = useState({});
   const [codeId, setCodeId] = useState("");
   const [migrateContractAddr, setMigrateContractAddr] = useState("");
   const handleOptionsRef = useRef(null);
@@ -146,47 +144,22 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
           <div className="wrap-form">
             {children}
             <HandleOptions handleOptionsRef={handleOptionsRef} />
-            {_.isEmpty(handleSchema) && (
-              <div style={{ marginBottom: "10px" }}>
-                <CustomInput
-                  inputHeader="Execute message"
-                  input={executeMessage}
-                  setInput={setExecuteMessage}
-                  placeholder="eg. {}"
-                />
-                <Button
-                  onClick={() => {
-                    onHandle(null);
-                  }}
-                  className="primary-button"
-                >
-                  Execute
-                </Button>
-                <div style={{ cursor: "pointer", fontFamily: "Courier" }}>
-                  <MyDropZone
-                    setSchema={setHandleSchema}
-                    setJson={null}
-                    dropZoneText={"Upload the schema file"}
-                  />
-                </div>
-              </div>
-            )}
-            {!_.isEmpty(handleSchema) && (
-              <div>
-                <CustomForm
-                  schema={handleSchema}
-                  onSubmit={(data) => onHandle(data)}
-                />
-                <Button
-                  onClick={() => {
-                    setHandleSchema({});
-                  }}
-                  className="remove-button"
-                >
-                  Remove schema form
-                </Button>
-              </div>
-            )}
+            <div style={{ marginBottom: "10px" }}>
+              <CustomInput
+                inputHeader="Execute message"
+                input={executeMessage}
+                setInput={setExecuteMessage}
+                placeholder="eg. {}"
+              />
+              <Button
+                onClick={() => {
+                  onHandle(null);
+                }}
+                className="primary-button"
+              >
+                Execute
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -196,45 +169,20 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
             <span>Contract Query </span>
           </div>
           <div className="wrap-form">
-            {_.isEmpty(querySchema) && (
-              <div style={{ marginBottom: "24px" }}>
-                <CustomInput
-                  inputHeader="Query message"
-                  input={queryMessage}
-                  setInput={setQueryMessage}
-                  placeholder="eg. {}"
-                />
-                <Button
-                  onClick={() => onQuery(null)}
-                  className="primary-button"
-                >
-                  Query
-                </Button>
-                <div style={{ cursor: "pointer", fontFamily: "Courier" }}>
-                  <MyDropZone
-                    setSchema={setQuerySchema}
-                    setJson={null}
-                    dropZoneText={"Upload the schema file"}
-                  />
-                </div>
-              </div>
-            )}
-            {!_.isEmpty(querySchema) && (
-              <div style={{ marginBottom: "10px" }}>
-                <CustomForm
-                  schema={querySchema}
-                  onSubmit={(data) => onQuery(data)}
-                />
-                <Button
-                  onClick={() => {
-                    setQuerySchema({});
-                  }}
-                  className="remove-button"
-                >
-                  Remove schema form
-                </Button>
-              </div>
-            )}
+            <div style={{ marginBottom: "24px" }}>
+              <CustomInput
+                inputHeader="Query message"
+                input={queryMessage}
+                setInput={setQueryMessage}
+                placeholder="eg. {}"
+              />
+              <Button
+                onClick={() => onQuery(null)}
+                className="primary-button"
+              >
+                Query
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -251,48 +199,64 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
             />
             {children}
 
-            {_.isEmpty(migrateSchema) && (
-              <div style={{ marginBottom: "24px", marginTop: 14 }}>
-                <CustomInput
-                  inputHeader="Migrate message"
-                  input={migrateMessage}
-                  setInput={setMigrateMessage}
-                  placeholder="eg. {}"
-                />
-                <Button
-                  onClick={() => {
-                    onMigrate(null);
-                  }}
-                  className="primary-button"
-                >
-                  Migrate
-                </Button>
-                <div style={{ cursor: "pointer", fontFamily: "Courier" }}>
-                  <MyDropZone
-                    setSchema={setMigrateSchema}
-                    setJson={null}
-                    dropZoneText={"Upload the schema file"}
-                  />
-                </div>
-              </div>
-            )}
-            {!_.isEmpty(migrateSchema) && (
-              <div style={{ marginBottom: "10px", marginTop: 14 }}>
-                <CustomForm
-                  schema={migrateSchema}
-                  onSubmit={(data) => onMigrate(data)}
-                />
-                <Button
-                  onClick={() => {
-                    setMigrateSchema({});
-                  }}
-                  className="remove-button"
-                >
-                  Remove schema form
-                </Button>
-              </div>
-            )}
+            <div style={{ marginBottom: "24px", marginTop: 14 }}>
+              <CustomInput
+                inputHeader="Migrate message"
+                input={migrateMessage}
+                setInput={setMigrateMessage}
+                placeholder="eg. {}"
+              />
+              <Button
+                onClick={() => {
+                  onMigrate(null);
+                }}
+                className="primary-button"
+              >
+                Migrate
+              </Button>
+            </div>
           </div>
+        </div>
+      )}
+      {
+        _.isEmpty(schema) && (
+          <div style={{ cursor: "pointer", fontFamily: "Courier" }}>
+            <MyDropZone
+              setSchema={setSchema}
+              setJson={null}
+              dropZoneText={"Upload the schema file"}
+            />
+          </div>
+        )
+      }
+      {!_.isEmpty(schema) && (
+        <div style={{ marginBottom: "10px", marginTop: 14 }}>
+          {interactOption == "execute" && (
+            <CustomForm
+              schema={processSchema((schema as any).execute)}
+              onSubmit={(data: any) => onHandle(data)}
+            />
+          )}
+          {interactOption == "query" && (
+            <CustomForm
+              schema={processSchema((schema as any).query)}
+              onSubmit={(data: any) => onQuery(data)}
+            />
+          )}
+          {interactOption == "migrate" && (
+            <CustomForm
+              schema={processSchema((schema as any).migrate)}
+              onSubmit={(data: any) => onMigrate(data)}
+            />
+          )}
+          <Button
+            onClick={() => {
+              setSchema({});
+            }}
+            className="remove-button"
+          >
+            Remove schema form
+          </Button>
         </div>
       )}
       <div className="app-divider" />

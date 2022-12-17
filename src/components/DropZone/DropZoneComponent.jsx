@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { processSchema } from 'src/lib/utils'
+import { actionType, processSchema } from 'src/lib/utils'
 import styled from 'styled-components';
 
 const getColor = (props) => {
@@ -42,9 +42,17 @@ const MyDropZone = ({ setSchema, setJson, dropZoneText }) => {
             reader.onerror = () => alert('file reading has failed')
             reader.onload = () => {
                 // Do whatever you want with the file contents
-                const result = reader.result;
-                if (setSchema) setSchema(processSchema(JSON.parse(result)));
-                else setJson({ fileName: file.path, content: JSON.parse(result) })
+                try {
+                    const result = JSON.parse(reader.result);
+                    console.log("result reader: ", result)
+                    if (setSchema) {
+                        setSchema(result);
+                    }
+                    else
+                        setJson({ fileName: file.path, content: result })
+                } catch (error) {
+                    alert(`Error parsing the schema file to object from JSON with error: ${error}`);
+                }
             }
             reader.readAsText(file)
         })
