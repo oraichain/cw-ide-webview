@@ -1,4 +1,5 @@
 const processSchema = (schema) => {
+    console.log("schema: ", schema)
     try {
         if ((schema.oneOf || schema.anyOf)) {
             let key = 'anyOf';
@@ -20,10 +21,16 @@ const processSchema = (schema) => {
     }
 };
 
+const actionType = {
+    QUERY: "query",
+    EXECUTE: "execute",
+    MIGRATE: "migrate",
+}
+
 export const parseGasLimits = (gasLimits) => {
     if (!gasLimits) return undefined;
     const gasLimitsInt = parseInt(gasLimits);
     return { upload: gasLimitsInt, init: gasLimitsInt, exec: gasLimitsInt }
 }
 
-export { processSchema };
+export { processSchema, actionType };
