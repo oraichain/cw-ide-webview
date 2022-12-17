@@ -466,39 +466,32 @@ const App = () => {
 
       <div className="app-divider" />
       <div className="contract">
-        {!isLoading ? (
-          arrayContract.length ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
+        {arrayContract.length ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <span>Contract address </span>
+            <Popconfirm
+              title="delete all contact address?"
+              onConfirm={() => removeContract("")}
+              okText="Yes"
+              placement="top"
+              cancelText="No"
             >
-              <span>Contract address </span>
-              <Popconfirm
-                title="delete all contact address?"
-                onConfirm={() => removeContract("")}
-                okText="Yes"
-                placement="top"
-                cancelText="No"
-              >
-                <img
-                  className="click"
-                  src={RemoveIcon}
-                  width={20}
-                  height={20}
-                  alt=""
-                />
-              </Popconfirm>
-            </div>
-          ) : (
-            <></>
-          )
-        ) : (
-          <div className="deploying">
-            <Spin indicator={antIcon} />
-            <span>{ideAction} ...</span>
+              <img
+                className="click"
+                src={RemoveIcon}
+                width={20}
+                height={20}
+                alt=""
+              />
+            </Popconfirm>
           </div>
+        ) : (
+          <></>
         )}
         {!isLoading &&
           arrayContract &&
@@ -637,7 +630,7 @@ const App = () => {
           />
         </div>
       )} */}
-      {isBuilt && (
+      {isBuilt && !isLoading && (
         <div>
           <div className="app-body">
             <CustomNetwork updateChain={updateChain} />
@@ -768,6 +761,14 @@ const App = () => {
           </GasForm>
         </AdvancedInteraction>
       )}
+      {
+        isLoading && (
+          <div className="deploying">
+            <Spin indicator={antIcon} />
+            <span>{ideAction} ...</span>
+          </div>
+        )
+      }
     </div>
   );
 };
