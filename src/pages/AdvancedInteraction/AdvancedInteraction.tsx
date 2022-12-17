@@ -24,15 +24,6 @@ const antIcon = (
 );
 
 const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
-  // const [mnemonic, setMnemonic] = useState("");
-  // const [gasPrice, setGasPrice] = useState(
-  //   window.chainStore.current.gasPriceStep?.average
-  //     ? window.chainStore.current.gasPriceStep.average.toString()
-  //     : "0"
-  // );
-  // const [gasDenom, setGasDenom] = useState(
-  //   window.chainStore.current.feeCurrencies[0].coinMinimalDenom
-  // );
   const [interactOption, setInteractOption] = useState("query");
   const [contractAddr, setContractAddr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -48,16 +39,6 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
   const [codeId, setCodeId] = useState("");
   const [migrateContractAddr, setMigrateContractAddr] = useState("");
   const handleOptionsRef = useRef(null);
-
-  // const updateChain = (value) => {
-  //   setChainName(value);
-  //   setGasPrice(
-  //     window.chainStore.current.gasPriceStep?.average
-  //       ? window.chainStore.current.gasPriceStep.average.toString()
-  //       : "0"
-  //   );
-  //   setGasDenom(window.chainStore.current.feeCurrencies[0].coinMinimalDenom);
-  // };
 
   const onQuery = async (data) => {
     setErrorMessage("");
@@ -215,12 +196,6 @@ const AdvancedInteraction = ({ children, updateChain, gasData, mnemonic }) => {
             <span>Contract Query </span>
           </div>
           <div className="wrap-form">
-            {/* <CustomInput
-              inputHeader="Gas denom"
-              input={gasDenom}
-              setInput={setGasDenom}
-              placeholder="eg. orai"
-            /> */}
             {_.isEmpty(querySchema) && (
               <div style={{ marginBottom: "24px" }}>
                 <CustomInput
