@@ -48,7 +48,7 @@ const MyDropZone = ({ setSchema, setJson, dropZoneText }) => {
                     if (setSchema) {
                         setSchema(result);
                     }
-                    else
+                    if (setJson)
                         setJson({ fileName: file.path, content: result })
                 } catch (error) {
                     alert(`Error parsing the schema file to object from JSON with error: ${error}`);

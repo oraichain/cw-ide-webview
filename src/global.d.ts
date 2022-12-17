@@ -44,6 +44,12 @@ declare global {
     keplr: keplr;
   }
 
+  type CosmWasmSchema = {
+    execute: any;
+    query: any;
+    migrate?: any;
+  }
+
   declare const APP_SETTINGS: Record<string, any>;
 }
 

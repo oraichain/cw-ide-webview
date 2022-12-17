@@ -15,6 +15,7 @@ import {
   CustomSelect,
   GasForm,
   HandleOptions,
+  MyDropZone,
 } from "./components";
 import ReactJson from "react-json-view";
 import CosmJsFactory from "./lib/cosmjs-factory";
@@ -71,6 +72,10 @@ const App = () => {
   const [arrayContract, setArrayContract] = useState([]);
   const [chainName, setChainName] = useState("Oraichain Testnet");
   const handleOptionsRef = useRef(null);
+
+  // update schema when migrating a contract
+  const [updatedSchema, setUpdatedSchema] = useState<CosmWasmSchema | undefined>(undefined);
+  const [updatedSchemaJson, setUpdatedSchemaJson] = useState({});
 
   // Handle messages sent from the extension to the webview
   const eventHandler = (event: any) => {
@@ -182,9 +187,13 @@ const App = () => {
       let CheckDuplicateContract = JSON.parse(getLocalStorage).find(
         (e) => e.contract === contract && e.chainName === chainName
       );
-      array = CheckDuplicateContract
-        ? [...JSON.parse(getLocalStorage)]
-        : [...JSON.parse(getLocalStorage), contractArrayInfo];
+      const listContracts = JSON.parse(getLocalStorage);
+      array = CheckDuplicateContract ? listContracts.map(data => {
+        if (data?.contract === contract) {
+          return contractArrayInfo;
+        }
+        return data;
+      }) : [...JSON.parse(getLocalStorage), contractArrayInfo];
       window.localStorage.setItem(key, JSON.stringify([...array]));
     } else {
       array = [contractArrayInfo];
@@ -433,11 +442,21 @@ const App = () => {
   };
 
   const onMigrate = async (data: any, contract: any) => {
+
+    if (updatedSchema) {
+      const handleFile = processSchema(updatedSchema.execute);
+      const queryFile = processSchema(updatedSchema.query);
+      const migrateFile = !_.isNil(updatedSchema.migrate)
+        ? processSchema(updatedSchema.migrate)
+        : null;
+      setLocalstorage(contract, handleFile, queryFile, migrateFile, "migrate");
+    }
+
     setErrorMessage("");
     setResultTxHash(null);
     setIsInteractionLoading(true);
-    let cosmJs = new CosmJsFactory(window.chainStore.current);
-    let handleMsg = isNil(data) || data === "" ? {} : data;
+    const cosmJs = new CosmJsFactory(window.chainStore.current);
+    const handleMsg = isNil(data) || data === "" ? {} : data;
     try {
       const migrateResult = await cosmJs.current.migrate({
         mnemonic,
@@ -548,9 +567,8 @@ const App = () => {
                         )}
                         {interactOption === "migrate" &&
                           !_.isNil(e?.migrateFile) && (
-                            <div>
+                            <div className="inmem-contract-container">
                               <div
-                                style={{ marginTop: 8, marginBottom: -20 }}
                                 className="contract"
                               >
                                 <span>Contract Migrate </span>
@@ -573,6 +591,37 @@ const App = () => {
                                     type={"password"}
                                   />
                                 </GasForm>
+                                {_.isEmpty(updatedSchema) && (
+                                  <div style={{ cursor: "pointer", fontFamily: "Courier" }}>
+                                    <MyDropZone
+                                      setSchema={setUpdatedSchema}
+                                      setJson={setUpdatedSchemaJson}
+                                      dropZoneText={"Upload the new contract schema file (optional)"}
+                                    />
+                                  </div>
+                                )}
+                                {!_.isEmpty(updatedSchema) && (
+                                  <div>
+                                    <div
+                                      style={{
+                                        color: "#c4c6c9",
+                                        fontFamily: "Courier",
+                                        paddingBottom: "8px",
+                                      }}
+                                    >
+                                      {`file name: ${(updatedSchemaJson as any).fileName}`}
+                                    </div>
+                                    <Button
+                                      onClick={() => {
+                                        setUpdatedSchema(undefined);
+                                      }}
+                                      className="remove-button"
+                                    >
+                                      Remove schema form
+                                    </Button>
+                                  </div>
+                                )}
+
                                 <CustomForm
                                   schema={e?.migrateFile}
                                   onSubmit={(data) => onMigrate(data, e.contract)}

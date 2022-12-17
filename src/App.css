@@ -56,3 +56,7 @@
   justify-content: flex-end;
   padding-bottom: 16px;
 }
+
+.inmem-contract-container {
+  word-break: break-all;
+}
